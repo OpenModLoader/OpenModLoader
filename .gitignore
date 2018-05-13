@@ -1,0 +1,21 @@
+# Ignore everything
+/*
+
+# Folders
+!/gradle
+!/src
+
+# Files
+!/.gitattributes
+!/.gitignore
+!/build.gradle
+!/gradle.properties
+!/gradlew
+!/gradlew.bat
+!/HEADER
+!/Jenkinsfile
+!/LICENSE
+!/README.md
+!/settings.gradle
+# Temporary
+!/OpenGradle-0.0.7-SNAPSHOT.jar

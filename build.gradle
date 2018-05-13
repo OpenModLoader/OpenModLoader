@@ -1,0 +1,47 @@
+import com.openmodloader.gradle.OpenGradlePlugin
+
+buildscript{
+    dependencies{
+        classpath files('OpenGradle-0.0.7-SNAPSHOT.jar')
+    }
+}
+
+apply plugin: OpenGradlePlugin
+
+group 'com.openmodloader.loader'
+version '1.0.0'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+minecraft {
+    version = "18w19b"
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven {
+        name = 'mojang'
+        url = 'https://libraries.minecraft.net/'
+    }
+    maven {
+        name = 'Fabric'
+        url = 'http://maven.fabricmc.net/'
+    }
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile "com.github.zafarkhaja:java-semver:0.9.0"
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compile ('net.minecraft:launchwrapper:1.12') {
+        transitive = false
+    }
+    compile 'org.ow2.asm:asm-debug-all:5.2'
+    compile 'com.typesafe:config:1.3.1'
+    compile 'com.mojang:authlib:1.5.25'
+    compile 'net.sf.jopt-simple:jopt-simple:5.0.3'
+    compile 'net.fabricmc:tiny-remapper:+'
+}
