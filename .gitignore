@@ -4,6 +4,7 @@
 # Folders
 !/gradle
 !/src
+!/mappings
 
 # Files
 !/.gitattributes
