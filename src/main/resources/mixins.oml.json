@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.7.8",
+  "package": "com.openmodloader.loader.mixin",
+  "refmap": "mixins.openmodloader.refmap.json",
+  "target": "@env(DEFAULT)",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+  ],
+  "server": [
+    "MixinServerBrand"
+  ],
+  "client": [
+    "MixinClientBrand"
+  ]
+}

@@ -3,6 +3,8 @@ package com.openmodloader.loader.launch;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
+import org.spongepowered.asm.mixin.MixinEnvironment;
+import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,10 +45,10 @@ public abstract class OpenTweaker implements ITweaker {
     @Override
     public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
         //TODO: Replace with mixins
+        Mixins.addConfigurations("mixins.oml.json");
         if (Boolean.parseBoolean(System.getProperty("oml.development", "false"))) {
             launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.AccessTransformer");
         }
-        launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.BrandTransformer");
         launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.GameTransformer");
     }
 
