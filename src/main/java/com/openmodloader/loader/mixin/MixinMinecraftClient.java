@@ -12,8 +12,7 @@ import java.io.IOException;
 
 @Mixin(MinecraftClient.class)
 public class MixinMinecraftClient {
-
-    @Inject(method = "<init>",at = @At(value = "RETURN"))
+    @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void init(CallbackInfo info) throws IOException {
         OpenModLoader.initialize(MinecraftClient.getInstance().runDirectory, new ClientSideHandler());
     }

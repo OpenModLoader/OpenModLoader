@@ -19,6 +19,7 @@ public final class OpenModLoader {
     private static File configDir;
     private static File modsDir;
     private static List<ModContainer> CONTAINERS = new ArrayList<>();
+
     private OpenModLoader(SideHandler sideHandler) {
     }
 
@@ -26,8 +27,8 @@ public final class OpenModLoader {
         return GSON;
     }
 
-    public static void initialize(File runDirectory,SideHandler sideHandler) throws IOException {
-        OpenModLoader.sideHandler=sideHandler;
+    public static void initialize(File runDirectory, SideHandler sideHandler) throws IOException {
+        OpenModLoader.sideHandler = sideHandler;
         if (initialized) {
             throw new RuntimeException("OpenModLoader has already been initialized!");
         }
