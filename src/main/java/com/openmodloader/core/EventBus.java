@@ -93,6 +93,8 @@ public class EventBus {
     }
 
     private void post(@Nonnull Event event, EventContext context) {
+        if(!subscribers.containsKey(event.getClass()))
+            return;
         for (Pair<Pair<String, Object>, Method> pair : subscribers.get(event.getClass())) {
             Pair<String, Object> modContext = pair.getFirst();
             OpenModLoader.setActiveMod(OpenModLoader.getModInfo(modContext.getFirst()));
