@@ -27,24 +27,24 @@ public class EventBus {
             if (!method.isAnnotationPresent(Event.Subscribe.class))
                 continue;
             if (method.getParameterTypes().length == 0)
-                throw new RuntimeException();
+                throw new RuntimeException("Attempted to use an @Event.Subscribe with no event");
             Event.Subscribe subscribe = method.getAnnotation(Event.Subscribe.class);
             Class<? extends Event> eventClass = (Class<? extends Event>) method.getParameterTypes()[0];
             Class<?> returnType = method.getReturnType();
             if (subscribe.phase() == EventPhase.CANCELLATION) {
                 if (!Event.Cancellable.class.isAssignableFrom(eventClass))
-                    throw new RuntimeException();
+                    throw new RuntimeException("Attempted to use Cancellation phase with a non cancellable event");
                 if (returnType != Boolean.TYPE)
-                    throw new RuntimeException();
+                    throw new RuntimeException("Attempted to use Cancellation phase with a non boolean return type");
             } else {
                 if (Event.WithResult.class.isAssignableFrom(eventClass)) {
                     if (returnType == Void.TYPE)
-                        throw new RuntimeException();
+                        throw new RuntimeException("Attempted to use an event with result and a void return type");
                     if (method.getParameterTypes().length < 2)
-                        throw new RuntimeException();
+                        throw new RuntimeException("You must accept the previous result as a parameter in events with results");
                 } else {
                     if (returnType != Void.TYPE)
-                        throw new RuntimeException();
+                        throw new RuntimeException("Attempted to use an non special event and a non void return type");
                 }
             }
 
