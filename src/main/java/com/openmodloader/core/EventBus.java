@@ -17,10 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class EventBus {
-    public Map<Class<? extends Event>, Set<Pair<Pair<String, Object>, Method>>> subscribers = new HashMap<>();
-
     public static EventPhase[] CANCEL_PHASES = new EventPhase[]{EventPhase.CANCELLATION, EventPhase.DEFAULT};
     public static EventPhase[] NORMAL_PHASES = new EventPhase[]{EventPhase.DEFAULT};
+    public Map<Class<? extends Event>, Set<Pair<Pair<String, Object>, Method>>> subscribers = new HashMap<>();
 
     public void register(Object target) {
         for (Method method : target.getClass().getDeclaredMethods()) {
@@ -59,7 +58,7 @@ public class EventBus {
         if (event instanceof Event.WithResult)
             context.result = ((Event.WithResult) event).getDefaultResult();
         ModInfo previousMod = OpenModLoader.getActiveMod();
-        for (EventPhase phase : event instanceof Event.Cancellable ? CANCEL_PHASES : NORMAL_PHASES) {
+        for (EventPhase phase : event instanceof Event.PhaseLimit ? ((Event.PhaseLimit) event).getPossiblePhases() : event instanceof Event.Cancellable ? CANCEL_PHASES : NORMAL_PHASES) {
             context.phase = phase;
             post(event, context);
         }
@@ -71,7 +70,7 @@ public class EventBus {
         EventContext context = new EventContext();
         context.result = ((Event.WithResult) event).getDefaultResult();
         ModInfo previousMod = OpenModLoader.getActiveMod();
-        for (EventPhase phase : event instanceof Event.Cancellable ? CANCEL_PHASES : NORMAL_PHASES) {
+        for (EventPhase phase : event instanceof Event.PhaseLimit ? ((Event.PhaseLimit) event).getPossiblePhases() : event instanceof Event.Cancellable ? CANCEL_PHASES : NORMAL_PHASES) {
             context.phase = phase;
             post(event, context);
         }
@@ -84,7 +83,7 @@ public class EventBus {
         if (event instanceof Event.WithResult)
             context.result = ((Event.WithResult) event).getDefaultResult();
         ModInfo previousMod = OpenModLoader.getActiveMod();
-        for (EventPhase phase : CANCEL_PHASES) {
+        for (EventPhase phase : event instanceof Event.PhaseLimit ? ((Event.PhaseLimit) event).getPossiblePhases() : CANCEL_PHASES) {
             context.phase = phase;
             post(event, context);
         }
@@ -93,12 +92,15 @@ public class EventBus {
     }
 
     private void post(@Nonnull Event event, EventContext context) {
-        if(!subscribers.containsKey(event.getClass()))
+        if (!subscribers.containsKey(event.getClass()))
             return;
         for (Pair<Pair<String, Object>, Method> pair : subscribers.get(event.getClass())) {
             Pair<String, Object> modContext = pair.getFirst();
             OpenModLoader.setActiveMod(OpenModLoader.getModInfo(modContext.getFirst()));
             Method method = pair.getSecond();
+            Event.Subscribe subscribe = method.getAnnotation(Event.Subscribe.class);
+            if (subscribe.phase() != context.phase)
+                continue;
             boolean validMethod = true;
             if (event instanceof Event.Generic) {
                 Type[] genericParameterTypes = method.getGenericParameterTypes();

@@ -12,6 +12,7 @@
   ],
   "client": [
     "MixinClientBrand",
+    "MixinMainMenu",
     "MixinMinecraftClient"
   ]
 }

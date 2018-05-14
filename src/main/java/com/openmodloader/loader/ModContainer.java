@@ -1,22 +1,19 @@
 package com.openmodloader.loader;
 
-import javax.annotation.Nonnull;
-import java.util.jar.JarFile;
-
 public class ModContainer {
-    private final JarFile jar;
     private final ModInfo info;
+    private final Object modInstance;
 
-    public ModContainer(@Nonnull JarFile jar, @Nonnull ModInfo info) {
-        this.jar = jar;
+    public ModContainer(ModInfo info, Object modInstance) {
         this.info = info;
-    }
-
-    public JarFile getJar() {
-        return jar;
+        this.modInstance = modInstance;
     }
 
     public ModInfo getInfo() {
         return info;
+    }
+
+    public Object getModInstance() {
+        return modInstance;
     }
 }

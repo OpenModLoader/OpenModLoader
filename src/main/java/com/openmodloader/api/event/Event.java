@@ -11,6 +11,11 @@ public interface Event {
     interface Cancellable extends Event {
 
     }
+
+    interface PhaseLimit extends Event {
+        EventPhase[] getPossiblePhases();
+    }
+
     interface Generic extends Event {
         boolean matchesGenericType(Class<? extends Event.Generic> eventType, int index, Type type);
     }
@@ -18,6 +23,7 @@ public interface Event {
     interface WithResult<T> extends Event {
         T getDefaultResult();
     }
+
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
     @interface Subscribe {

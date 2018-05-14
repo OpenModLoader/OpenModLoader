@@ -14,7 +14,7 @@ public class ModInfo {
     private String version;
     private String mcversion;
     private String side = "";
-    private String mainClass;
+    private String mainClass = "";
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
 
     public ModInfo(String modid) {
@@ -46,5 +46,17 @@ public class ModInfo {
 
     public String getMcVersion() {
         return mcversion;
+    }
+
+    public String getSide() {
+        return side;
+    }
+
+    public String getMainClass() {
+        return mainClass;
+    }
+
+    public String getLanguageAdapter() {
+        return languageAdapter;
     }
 }
