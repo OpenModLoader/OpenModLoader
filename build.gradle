@@ -16,7 +16,7 @@ buildscript{
 apply plugin: OpenGradlePlugin
 
 group 'com.openmodloader.loader'
-version '1.0.0'
+version '1.0.3'
 
 apply plugin: 'java'
 
@@ -24,8 +24,8 @@ sourceCompatibility = 1.8
 
 minecraft {
     version = "18w19b"
-    pomfVersion = "8"
-    refmapName = "open-mod-loader-refmap.json"
+    pomfVersion = "9"
+    refmapName = "mixins.openmodloader.refmap.json"
 }
 
 repositories {

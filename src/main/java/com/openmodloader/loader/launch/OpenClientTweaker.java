@@ -1,5 +1,6 @@
 package com.openmodloader.loader.launch;
 
+import net.fabricmc.api.Side;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
@@ -21,13 +22,12 @@ public class OpenClientTweaker extends OpenTweaker {
     }
 
     @Override
-    public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
-        MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
-        super.injectIntoClassLoader(launchClassLoader);
-    }
-
-    @Override
     public String getLaunchTarget() {
         return "net.minecraft.client.main.Main";
     }
+
+	@Override
+	public Side getSide() {
+		return Side.CLIENT;
+	}
 }
