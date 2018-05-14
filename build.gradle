@@ -1,8 +1,14 @@
 import com.openmodloader.gradle.OpenGradlePlugin
 
 buildscript{
+    repositories {
+        maven {
+            name = 'Modmuss'
+            url = 'http://maven.modmuss50.me/'
+        }
+    }
     dependencies{
-        classpath files('OpenGradle-0.0.7-SNAPSHOT.jar')
+        classpath 'OpenGradle:OpenGradle:0.0.8-SNAPSHOT'
     }
 }
 
@@ -29,6 +35,10 @@ repositories {
     maven {
         name = 'Fabric'
         url = 'http://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'Modmuss'
+        url = 'http://maven.modmuss50.me/'
     }
     maven {
         name = 'Sponge'
