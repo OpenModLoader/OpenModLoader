@@ -24,7 +24,7 @@ sourceCompatibility = 1.8
 
 minecraft {
     version = "18w19b"
-    pomfVersion = "1"
+    pomfVersion = "8"
     refmapName = "open-mod-loader-refmap.json"
 }
 

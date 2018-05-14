@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.openmodloader.api.loader.SideHandler;
 import com.openmodloader.core.EventBus;
-import com.openmodloader.core.EventHandler;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
