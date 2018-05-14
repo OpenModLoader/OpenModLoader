@@ -13,6 +13,8 @@ public class ModInfo {
     private String name;
     private String version;
     private String mcversion;
+    private String side = "";
+    private String mainClass;
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
 
     public ModInfo(String modid) {
@@ -23,14 +25,14 @@ public class ModInfo {
     }
 
     @Nullable
-    public static ModInfo readFromJar(@Nonnull JarFile file) throws IOException {
+    public static ModInfo[] readFromJar(@Nonnull JarFile file) throws IOException {
         ZipEntry entry = file.getEntry("mod.json");
         if (entry == null)
             return null;
-        return OpenModLoader.getGson().fromJson(new InputStreamReader(file.getInputStream(entry)), ModInfo.class);
+        return OpenModLoader.getGson().fromJson(new InputStreamReader(file.getInputStream(entry)), ModInfo[].class);
     }
 
-    public String getModid() {
+    public String getModId() {
         return modid;
     }
 
@@ -42,7 +44,7 @@ public class ModInfo {
         return version;
     }
 
-    public String getMcversion() {
+    public String getMcVersion() {
         return mcversion;
     }
 }
