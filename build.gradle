@@ -2,6 +2,7 @@ import com.openmodloader.gradle.OpenGradlePlugin
 
 buildscript{
     repositories {
+        mavenLocal()
         maven {
             name = 'Modmuss'
             url = 'http://maven.modmuss50.me/'
@@ -23,6 +24,8 @@ sourceCompatibility = 1.8
 
 minecraft {
     version = "18w19b"
+    pomfVersion = "1"
+    refmapName = "open-mod-loader-refmap.json"
 }
 
 repositories {
