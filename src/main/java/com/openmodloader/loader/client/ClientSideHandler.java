@@ -7,6 +7,5 @@ public class ClientSideHandler implements SideHandler {
     @Override
     public Side getSide() {
         return Side.CLIENT;
-
     }
 }

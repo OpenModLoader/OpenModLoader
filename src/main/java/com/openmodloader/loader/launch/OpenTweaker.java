@@ -43,10 +43,8 @@ public abstract class OpenTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
-        Mixins.addConfigurations("mixins.oml.json");
-        if (Boolean.parseBoolean(System.getProperty("oml.development", "false"))) {
-            launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.AccessTransformer");
-        }
+        Mixins.addConfigurations("mixins.openmodloader.json");
+        launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.AccessTransformer");
     }
 
     @Override

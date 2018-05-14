@@ -13,6 +13,7 @@ public class ModInfo {
     private String name;
     private String version;
     private String mcversion;
+    private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
 
     public ModInfo(String modid) {
         this.modid = modid;
