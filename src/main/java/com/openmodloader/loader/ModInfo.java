@@ -2,8 +2,7 @@ package com.openmodloader.loader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -30,6 +29,10 @@ public class ModInfo {
         if (entry == null)
             return null;
         return OpenModLoader.getGson().fromJson(new InputStreamReader(file.getInputStream(entry)), ModInfo[].class);
+    }
+
+    public static ModInfo[] readFromFile(File modJson) throws FileNotFoundException {
+        return OpenModLoader.getGson().fromJson(new InputStreamReader(new FileInputStream(modJson)), ModInfo[].class);
     }
 
     public String getModId() {

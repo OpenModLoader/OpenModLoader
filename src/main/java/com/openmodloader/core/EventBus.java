@@ -88,7 +88,7 @@ public class EventBus {
             post(event, context);
         }
         OpenModLoader.setActiveMod(previousMod);
-        return !context.cancelled;
+        return context.cancelled;
     }
 
     private void post(@Nonnull Event event, EventContext context) {

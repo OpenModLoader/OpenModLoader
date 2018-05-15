@@ -4,9 +4,7 @@ import net.fabricmc.api.Side;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
 import net.minecraft.launchwrapper.LaunchClassLoader;
-import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.MixinEnvironment;
-import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,8 +44,8 @@ public abstract class OpenTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
-	    MixinLoader.initMixins();
-	    MixinEnvironment.getDefaultEnvironment().setSide(getSide() == Side.CLIENT ? MixinEnvironment.Side.CLIENT : MixinEnvironment.Side.SERVER);
+        MixinLoader.initMixins();
+        MixinEnvironment.getDefaultEnvironment().setSide(getSide() == Side.CLIENT ? MixinEnvironment.Side.CLIENT : MixinEnvironment.Side.SERVER);
         launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.AccessTransformer");
     }
 
@@ -61,7 +59,7 @@ public abstract class OpenTweaker implements ITweaker {
         return launchArgs.toArray(new String[launchArgs.size()]);
     }
 
-    public Side getSide(){
-    	return Side.SERVER;
+    public Side getSide() {
+        return Side.SERVER;
     }
 }

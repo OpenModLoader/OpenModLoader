@@ -7,7 +7,7 @@ import net.minecraft.client.render.FontRenderer;
 
 import java.lang.reflect.Type;
 
-public class GuiEvent<G extends GuiScreen> implements Event.Generic, Event.Cancellable {
+public class GuiEvent<G extends GuiScreen> implements Event.Generic {
     private G gui;
     private Class<G> type;
 
@@ -35,6 +35,12 @@ public class GuiEvent<G extends GuiScreen> implements Event.Generic, Event.Cance
 
     public static class Draw<G extends GuiScreen> extends GuiEvent<G> {
         public Draw(G gui) {
+            super(gui);
+        }
+    }
+
+    public static class Open<G extends GuiScreen> extends GuiEvent<G> {
+        public Open(G gui) {
             super(gui);
         }
     }
