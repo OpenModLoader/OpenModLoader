@@ -1,4 +1,4 @@
-package com.openmodloader.core;
+package com.openmodloader.core.event;
 
 import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
@@ -62,6 +62,7 @@ public class EventBus {
             context.phase = phase;
             post(event, context);
         }
+        OpenModLoader.setCurrentPhase(null);
         OpenModLoader.setActiveMod(previousMod);
         return event;
     }
@@ -74,6 +75,7 @@ public class EventBus {
             context.phase = phase;
             post(event, context);
         }
+        OpenModLoader.setCurrentPhase(null);
         OpenModLoader.setActiveMod(previousMod);
         return (T) context.result;
     }
@@ -87,6 +89,7 @@ public class EventBus {
             context.phase = phase;
             post(event, context);
         }
+        OpenModLoader.setCurrentPhase(null);
         OpenModLoader.setActiveMod(previousMod);
         return context.cancelled;
     }
@@ -94,6 +97,7 @@ public class EventBus {
     private void post(@Nonnull Event event, EventContext context) {
         if (!subscribers.containsKey(event.getClass()))
             return;
+        OpenModLoader.setCurrentPhase(context.phase);
         for (Pair<Pair<String, Object>, Method> pair : subscribers.get(event.getClass())) {
             Pair<String, Object> modContext = pair.getFirst();
             OpenModLoader.setActiveMod(OpenModLoader.getModInfo(modContext.getFirst()));
