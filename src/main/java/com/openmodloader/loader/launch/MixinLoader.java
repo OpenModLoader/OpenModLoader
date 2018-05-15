@@ -73,6 +73,9 @@ public class MixinLoader {
 		for (ModInfo info : locateClasspathMods(modsDir)) {
 			mods.put(info.getModId(), info);
 		}
+		if(!modsDir.exists()){
+			modsDir.mkdir();
+		}
 		for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
 			JarFile jar = new JarFile(file);
 			ModInfo[] infos = ModInfo.readFromJar(jar);
