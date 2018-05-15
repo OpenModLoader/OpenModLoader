@@ -1,4 +1,4 @@
-package com.openmodloader.core;
+package com.openmodloader.core.event;
 
 import com.openmodloader.api.event.EventPhase;
 

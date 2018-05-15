@@ -4,13 +4,18 @@ import com.github.zafarkhaja.semver.Version;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.api.loader.SideHandler;
 import com.openmodloader.api.loader.language.ILanguageAdapter;
-import com.openmodloader.core.EventBus;
+import com.openmodloader.core.event.EventBus;
+import com.openmodloader.core.registry.RegistryEvent;
 import com.openmodloader.loader.event.EventHandler;
 import com.openmodloader.loader.event.LoadEvent;
 import com.openmodloader.loader.exception.MissingModsException;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,12 +39,21 @@ public final class OpenModLoader {
     private static File configDir;
     private static File modsDir;
     private static File modulesDir;
+    private static EventPhase currentPhase;
     private static Map<String, ModInfo> MOD_INFO_MAP = new HashMap<>();
     private static Map<String, ModContainer> MOD_CONTAINER_MAP = new HashMap<>();
     private static Map<String, ILanguageAdapter> LANGUAGE_ADAPTERS = new HashMap<>();
     private static ModInfo activeMod;
 
     private OpenModLoader() {
+    }
+
+    public static EventPhase getCurrentPhase() {
+        return currentPhase;
+    }
+
+    public static void setCurrentPhase(EventPhase currentPhase) {
+        OpenModLoader.currentPhase = currentPhase;
     }
 
     public static ModInfo getActiveMod() {
@@ -79,6 +93,9 @@ public final class OpenModLoader {
 
         EVENT_BUS.register(new EventHandler());
         LOAD_BUS.post(new LoadEvent.BusRegistration());
+        LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
+        LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
+        LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
     }
 
     private static void loadModules() throws IOException {
@@ -151,7 +168,7 @@ public final class OpenModLoader {
                 }
             }
         }
-        activeMod = getModInfo("openmodloader");
+        setActiveMod(getModInfo("openmodloader"));
 
         Map<String, List<String>> missingMods = new HashMap<>();
         Map<String, List<String>> wrongVersionMods = new HashMap<>();
