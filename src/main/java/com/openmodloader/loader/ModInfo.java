@@ -18,7 +18,7 @@ public class ModInfo {
     private String [] mixins = new String[]{};
 	private String [] clientMixins = new String[]{};
 	private String [] serverMixins = new String[]{};
-
+	private String [] dependencies = new String[]{};
 
 	public ModInfo(String modid) {
         this.modid = modid;
@@ -78,4 +78,8 @@ public class ModInfo {
 	public String[] getServerMixins() {
 		return serverMixins;
 	}
+
+    public String[] getDependencies() {
+        return dependencies;
+    }
 }

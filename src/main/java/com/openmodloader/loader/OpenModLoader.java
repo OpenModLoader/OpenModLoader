@@ -1,5 +1,6 @@
 package com.openmodloader.loader;
 
+import com.github.zafarkhaja.semver.Version;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,6 +9,7 @@ import com.openmodloader.api.loader.language.ILanguageAdapter;
 import com.openmodloader.core.EventBus;
 import com.openmodloader.loader.event.EventHandler;
 import com.openmodloader.loader.event.LoadEvent;
+import com.openmodloader.loader.exception.MissingModsException;
 import net.minecraft.launchwrapper.Launch;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -115,8 +117,8 @@ public final class OpenModLoader {
     private static void loadMods() throws IOException {
         for (ModInfo info : locateClasspathMods()) {
             MOD_INFO_MAP.put(info.getModId(), info);
-            if(info.getMainClass().isEmpty()){
-            	continue;
+            if (info.getMainClass().isEmpty()) {
+                continue;
             }
             try {
                 if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
@@ -135,21 +137,53 @@ public final class OpenModLoader {
                 continue;
             for (ModInfo info : infos) {
                 MOD_INFO_MAP.put(info.getModId(), info);
-	            if(info.getMainClass().isEmpty()){
-		            continue;
-	            }
+                if (info.getMainClass().isEmpty()) {
+                    continue;
+                }
                 try {
                     if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
                         LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
                     ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
                     MOD_CONTAINER_MAP.put(info.getModId(), container);
-                    LOAD_BUS.register(container);
+                    LOAD_BUS.register(container.getModInstance());
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
         activeMod = getModInfo("openmodloader");
+
+        Map<String, List<String>> missingMods = new HashMap<>();
+        Map<String, List<String>> wrongVersionMods = new HashMap<>();
+
+        for (ModInfo info : MOD_INFO_MAP.values()) {
+            for (String depend : info.getDependencies()) {
+                String[] split = depend.split("@");
+                ModInfo dependInfo = getModInfo(split[0]);
+                if (dependInfo == null) {
+                    if (!missingMods.containsKey(info.getModId()))
+                        missingMods.put(info.getModId(), new ArrayList<>());
+                    missingMods.get(info.getModId()).add(depend);
+                    continue;
+                }
+                if (split.length > 1) {
+                    Version dependVersion = Version.valueOf(dependInfo.getVersion());
+                    if (!dependVersion.satisfies(split[1])) {
+                        if (!wrongVersionMods.containsKey(info.getModId()))
+                            wrongVersionMods.put(info.getModId(), new ArrayList<>());
+                        wrongVersionMods.get(info.getModId()).add(depend);
+                    }
+                }
+            }
+            List<String> missing = missingMods.get(info.getModId());
+            List<String> wrongVersion = wrongVersionMods.get(info.getModId());
+            if ((missing != null && !missing.isEmpty()) || (wrongVersion != null && !wrongVersion.isEmpty())) {
+                MOD_INFO_MAP.remove(info.getModId());
+                MOD_CONTAINER_MAP.remove(info.getModId());
+            }
+        }
+        if (!missingMods.isEmpty() || !wrongVersionMods.isEmpty())
+            throw new MissingModsException(missingMods, wrongVersionMods);
     }
 
     public static SideHandler getSideHandler() {
@@ -161,6 +195,6 @@ public final class OpenModLoader {
     }
 
     public static String getVersion() {
-        return "1.0.3";
+        return getModInfo("openmodloader").getVersion();
     }
 }
