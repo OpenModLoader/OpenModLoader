@@ -15,8 +15,12 @@ public class ModInfo {
     private String side = "";
     private String mainClass = "";
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
+    private String [] mixins = new String[]{};
+	private String [] clientMixins = new String[]{};
+	private String [] serverMixins = new String[]{};
 
-    public ModInfo(String modid) {
+
+	public ModInfo(String modid) {
         this.modid = modid;
     }
 
@@ -62,4 +66,16 @@ public class ModInfo {
     public String getLanguageAdapter() {
         return languageAdapter;
     }
+
+	public String[] getMixins() {
+		return mixins;
+	}
+
+	public String[] getClientMixins() {
+		return clientMixins;
+	}
+
+	public String[] getServerMixins() {
+		return serverMixins;
+	}
 }

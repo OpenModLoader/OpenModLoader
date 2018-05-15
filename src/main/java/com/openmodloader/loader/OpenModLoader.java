@@ -36,7 +36,6 @@ public final class OpenModLoader {
     private static Map<String, ModContainer> MOD_CONTAINER_MAP = new HashMap<>();
     private static Map<String, ILanguageAdapter> LANGUAGE_ADAPTERS = new HashMap<>();
     private static ModInfo activeMod;
-    private static ModInfo loaderInfo;
 
     private OpenModLoader() {
     }
@@ -62,9 +61,6 @@ public final class OpenModLoader {
         if (initialized) {
             throw new RuntimeException("OpenModLoader has already been initialized!");
         }
-        loaderInfo = new ModInfo("openmodloader");
-        MOD_INFO_MAP.put(loaderInfo.getModId(), loaderInfo);
-        setActiveMod(loaderInfo);
         gameDir = runDirectory;
         configDir = new File(gameDir, "config");
         if (!configDir.exists())
@@ -119,6 +115,9 @@ public final class OpenModLoader {
     private static void loadMods() throws IOException {
         for (ModInfo info : locateClasspathMods()) {
             MOD_INFO_MAP.put(info.getModId(), info);
+            if(info.getMainClass().isEmpty()){
+            	continue;
+            }
             try {
                 if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
                     LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
@@ -136,6 +135,9 @@ public final class OpenModLoader {
                 continue;
             for (ModInfo info : infos) {
                 MOD_INFO_MAP.put(info.getModId(), info);
+	            if(info.getMainClass().isEmpty()){
+		            continue;
+	            }
                 try {
                     if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
                         LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
@@ -147,6 +149,7 @@ public final class OpenModLoader {
                 }
             }
         }
+        activeMod = getModInfo("openmodloader");
     }
 
     public static SideHandler getSideHandler() {
