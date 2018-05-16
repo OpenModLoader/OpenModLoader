@@ -15,6 +15,9 @@ import com.openmodloader.loader.exception.MissingModsException;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.resource.ResourcePack;
+import net.minecraft.resource.metadata.ResourceSectionPack;
+import net.minecraft.resource.pack.VanillaResourcePack;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -142,7 +145,10 @@ public final class OpenModLoader {
                     LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
                 ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
                 MOD_CONTAINER_MAP.put(info.getModId(), container);
-                LOAD_BUS.register(container);
+                setActiveMod(info);
+                ResourcePack pack = new VanillaResourcePack(info.getModId());
+
+                LOAD_BUS.register(container.getModInstance());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
@@ -162,6 +168,7 @@ public final class OpenModLoader {
                         LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
                     ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
                     MOD_CONTAINER_MAP.put(info.getModId(), container);
+                    setActiveMod(info);
                     LOAD_BUS.register(container.getModInstance());
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
                     throw new RuntimeException(e);

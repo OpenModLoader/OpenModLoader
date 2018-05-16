@@ -24,7 +24,7 @@ sourceCompatibility = 1.8
 
 minecraft {
     version = "18w20a"
-    pomfVersion = "6"
+    pomfVersion = "8"
     refmapName = "mixins.openmodloader.refmap.json"
 }
 
