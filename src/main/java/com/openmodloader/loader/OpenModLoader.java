@@ -15,9 +15,6 @@ import com.openmodloader.loader.exception.MissingModsException;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.metadata.ResourceSectionPack;
-import net.minecraft.resource.pack.VanillaResourcePack;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -77,6 +74,7 @@ public final class OpenModLoader {
 
     public static void initialize(File runDirectory, SideHandler sideHandler) throws IOException {
         OpenModLoader.sideHandler = sideHandler;
+        LOGGER.info("Starting OpenModLoader on " + sideHandler.getSide());
         if (initialized) {
             throw new RuntimeException("OpenModLoader has already been initialized!");
         }
@@ -146,7 +144,7 @@ public final class OpenModLoader {
                 ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
                 MOD_CONTAINER_MAP.put(info.getModId(), container);
                 setActiveMod(info);
-                ResourcePack pack = new VanillaResourcePack(info.getModId());
+
 
                 LOAD_BUS.register(container.getModInstance());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {

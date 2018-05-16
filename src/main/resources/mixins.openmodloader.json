@@ -6,9 +6,10 @@
   "target": "@env(DEFAULT)",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MixinMinecraftServer"
   ],
   "server": [
-    "MixinMinecraftServer"
+    "MixinDedicatedServer"
   ],
   "client": [
     "MixinClientBrand",
