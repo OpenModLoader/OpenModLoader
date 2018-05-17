@@ -9,6 +9,7 @@ import com.openmodloader.api.loader.SideHandler;
 import com.openmodloader.api.loader.language.ILanguageAdapter;
 import com.openmodloader.core.event.EventBus;
 import com.openmodloader.core.registry.RegistryEvent;
+import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.event.EventHandler;
 import com.openmodloader.loader.event.LoadEvent;
 import com.openmodloader.loader.exception.MissingModsException;
@@ -38,7 +39,7 @@ public final class OpenModLoader {
     private static File gameDir;
     private static File configDir;
     private static File modsDir;
-    private static File modulesDir;
+    private static File librariesDir;
     private static EventPhase currentPhase;
     private static Map<String, ModInfo> MOD_INFO_MAP = new HashMap<>();
     private static Map<String, ModContainer> MOD_CONTAINER_MAP = new HashMap<>();
@@ -85,12 +86,13 @@ public final class OpenModLoader {
         modsDir = new File(gameDir, "mods");
         if (!modsDir.exists())
             modsDir.mkdirs();
-        modulesDir = new File(gameDir, "modules");
-        if (!modulesDir.exists())
-            modulesDir.mkdirs();
+        librariesDir = new File(gameDir, "libraries");
+        if (!librariesDir.exists())
+            librariesDir.mkdirs();
         loadMods();
         loadLibraries();
         scanDependencies();
+        finalLoad();
         initialized = true;
 
         EventHandler handler = new EventHandler();
@@ -100,6 +102,27 @@ public final class OpenModLoader {
         LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
         LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
         LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
+    }
+
+    private static void finalLoad() {
+        MOD_INFO_MAP.values().forEach(OpenModLoader::loadMod);
+    }
+
+    private static void loadLibraries() {
+        for (ModInfo info : MOD_INFO_MAP.values()) {
+            ModInfo[] infos = downloadLibraries(info);
+            ArrayUtil.forEach(infos, info1 -> {
+                MOD_INFO_MAP.put(info1.getModId(), info1);
+                downloadLibraries(info1);
+            });
+        }
+    }
+
+    public static ModInfo[] downloadLibraries(ModInfo info) {
+        if (info.getLibraries().length == 0)
+            return new ModInfo[0];
+        //TODO: Scan and download libraries
+        return new ModInfo[0];
     }
 
     private static void scanDependencies() {
@@ -135,17 +158,13 @@ public final class OpenModLoader {
             throw new MissingModsException(missingMods, wrongVersionMods);
     }
 
-    private static void loadLibraries() throws IOException {
-
-    }
-
-    private static List<ModInfo> locateClasspathMods(File dir) {
+    private static List<ModInfo> locateClasspathMods() {
         List<ModInfo> mods = new ArrayList<>();
         String javaHome = System.getProperty("java.home");
 
         URL[] urls = Launch.classLoader.getURLs();
         for (URL url : urls) {
-            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(dir.getAbsolutePath())) {
+            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath()) || url.getPath().startsWith(librariesDir.getAbsolutePath())) {
                 continue;
             }
             LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
@@ -168,12 +187,8 @@ public final class OpenModLoader {
         return mods;
     }
 
-    private static void loadMods() throws IOException {
-        for (ModInfo info : locateClasspathMods(modsDir)) {
-            MOD_INFO_MAP.put(info.getModId(), info);
-            if (info.getMainClass().isEmpty()) {
-                continue;
-            }
+    private static void loadMod(ModInfo info) {
+        if (!info.getMainClass().isEmpty()) {
             try {
                 if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
                     LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
@@ -185,29 +200,23 @@ public final class OpenModLoader {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private static void loadMods() throws IOException {
+
+        locateClasspathMods().forEach(OpenModLoader::addInfo);
         for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
             JarFile jar = new JarFile(file);
             ModInfo[] infos = ModInfo.readFromJar(jar);
             if (infos == null)
                 continue;
-            for (ModInfo info : infos) {
-                MOD_INFO_MAP.put(info.getModId(), info);
-                if (info.getMainClass().isEmpty()) {
-                    continue;
-                }
-                try {
-                    if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
-                        LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
-                    ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
-                    MOD_CONTAINER_MAP.put(info.getModId(), container);
-                    setActiveMod(info);
-                    LOAD_BUS.register(container.getModInstance());
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+            ArrayUtil.forEach(infos, OpenModLoader::addInfo);
         }
         setActiveMod(getModInfo("openmodloader"));
+    }
+
+    private static void addInfo(ModInfo info) {
+        MOD_INFO_MAP.put(info.getModId(), info);
     }
 
     public static SideHandler getSideHandler() {
