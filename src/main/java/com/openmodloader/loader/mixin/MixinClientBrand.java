@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 public abstract class MixinClientBrand {
 
     /**
+     * @reason Change modification branding
      * @author Coded
      */
     @Overwrite

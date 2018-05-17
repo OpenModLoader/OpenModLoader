@@ -31,11 +31,6 @@ public class MixinLoader {
 	    findMods(modsDir);
 	    mods.values().forEach(modInfo -> {
 		    Arrays.stream(modInfo.getMixins()).forEach(Mixins::addConfiguration);
-		    if(side == Side.CLIENT){
-			    Arrays.stream(modInfo.getClientMixins()).forEach(Mixins::addConfiguration);
-		    } else {
-			    Arrays.stream(modInfo.getServerMixins()).forEach(Mixins::addConfiguration);
-		    }
 	    });
     }
 
