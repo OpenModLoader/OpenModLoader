@@ -89,7 +89,8 @@ public final class OpenModLoader {
         if (!modulesDir.exists())
             modulesDir.mkdirs();
         loadMods();
-        loadModules();
+        loadLibraries();
+        scanDependencies();
         initialized = true;
 
         EventHandler handler = new EventHandler();
@@ -101,85 +102,9 @@ public final class OpenModLoader {
         LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
     }
 
-    private static void loadModules() throws IOException {
-
-    }
-
-    private static List<ModInfo> locateClasspathMods() {
-        List<ModInfo> mods = new ArrayList<>();
-        String javaHome = System.getProperty("java.home");
-
-        URL[] urls = Launch.classLoader.getURLs();
-        for (URL url : urls) {
-            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
-                continue;
-            }
-            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
-
-            File f = new File(url.getFile());
-            if (f.exists()) {
-                if (f.isDirectory()) {
-                    File modJson = new File(f, "mod.json");
-                    if (modJson.exists()) {
-                        try {
-                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
-                        } catch (FileNotFoundException e) {
-                            LOGGER.error("Unable to load mod from directory " + f.getPath());
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
-        return mods;
-    }
-
-    private static void loadMods() throws IOException {
-        for (ModInfo info : locateClasspathMods()) {
-            MOD_INFO_MAP.put(info.getModId(), info);
-            if (info.getMainClass().isEmpty()) {
-                continue;
-            }
-            try {
-                if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
-                    LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
-                ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
-                MOD_CONTAINER_MAP.put(info.getModId(), container);
-                setActiveMod(info);
-
-
-                LOAD_BUS.register(container.getModInstance());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
-            JarFile jar = new JarFile(file);
-            ModInfo[] infos = ModInfo.readFromJar(jar);
-            if (infos == null)
-                continue;
-            for (ModInfo info : infos) {
-                MOD_INFO_MAP.put(info.getModId(), info);
-                if (info.getMainClass().isEmpty()) {
-                    continue;
-                }
-                try {
-                    if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
-                        LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
-                    ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
-                    MOD_CONTAINER_MAP.put(info.getModId(), container);
-                    setActiveMod(info);
-                    LOAD_BUS.register(container.getModInstance());
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-        setActiveMod(getModInfo("openmodloader"));
-
+    private static void scanDependencies() {
         Map<String, List<String>> missingMods = new HashMap<>();
         Map<String, List<String>> wrongVersionMods = new HashMap<>();
-
         for (ModInfo info : MOD_INFO_MAP.values()) {
             for (String depend : info.getDependencies()) {
                 String[] split = depend.split("@");
@@ -208,6 +133,81 @@ public final class OpenModLoader {
         }
         if (!missingMods.isEmpty() || !wrongVersionMods.isEmpty())
             throw new MissingModsException(missingMods, wrongVersionMods);
+    }
+
+    private static void loadLibraries() throws IOException {
+
+    }
+
+    private static List<ModInfo> locateClasspathMods(File dir) {
+        List<ModInfo> mods = new ArrayList<>();
+        String javaHome = System.getProperty("java.home");
+
+        URL[] urls = Launch.classLoader.getURLs();
+        for (URL url : urls) {
+            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(dir.getAbsolutePath())) {
+                continue;
+            }
+            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
+
+            File f = new File(url.getFile());
+            if (f.exists()) {
+                if (f.isDirectory()) {
+                    File modJson = new File(f, "mod.json");
+                    if (modJson.exists()) {
+                        try {
+                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
+                        } catch (FileNotFoundException e) {
+                            LOGGER.error("Unable to load mod from directory " + f.getPath());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        return mods;
+    }
+
+    private static void loadMods() throws IOException {
+        for (ModInfo info : locateClasspathMods(modsDir)) {
+            MOD_INFO_MAP.put(info.getModId(), info);
+            if (info.getMainClass().isEmpty()) {
+                continue;
+            }
+            try {
+                if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
+                    LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
+                ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
+                MOD_CONTAINER_MAP.put(info.getModId(), container);
+                setActiveMod(info);
+                LOAD_BUS.register(container.getModInstance());
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
+            JarFile jar = new JarFile(file);
+            ModInfo[] infos = ModInfo.readFromJar(jar);
+            if (infos == null)
+                continue;
+            for (ModInfo info : infos) {
+                MOD_INFO_MAP.put(info.getModId(), info);
+                if (info.getMainClass().isEmpty()) {
+                    continue;
+                }
+                try {
+                    if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter()))
+                        LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
+                    ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
+                    MOD_CONTAINER_MAP.put(info.getModId(), container);
+                    setActiveMod(info);
+                    LOAD_BUS.register(container.getModInstance());
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        setActiveMod(getModInfo("openmodloader"));
     }
 
     public static SideHandler getSideHandler() {
