@@ -92,7 +92,9 @@ public final class OpenModLoader {
         loadModules();
         initialized = true;
 
-        EVENT_BUS.register(new EventHandler());
+        EventHandler handler = new EventHandler();
+        EVENT_BUS.register(handler);
+        LOAD_BUS.register(handler);
         LOAD_BUS.post(new LoadEvent.BusRegistration());
         LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
         LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));

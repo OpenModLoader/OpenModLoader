@@ -1,7 +1,7 @@
 package com.openmodloader.loader.event;
 
 import com.openmodloader.api.event.Event;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.render.FontRenderer;
 
@@ -20,8 +20,8 @@ public class GuiEvent<G extends GuiScreen> implements Event.Generic {
         return gui;
     }
 
-    public MinecraftClient getClient() {
-        return MinecraftClient.getInstance();
+    public Minecraft getClient() {
+        return Minecraft.getInstance();
     }
 
     public FontRenderer getFontRenderer() {

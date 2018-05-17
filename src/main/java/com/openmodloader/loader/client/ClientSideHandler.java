@@ -2,7 +2,7 @@ package com.openmodloader.loader.client;
 
 import com.openmodloader.api.loader.SideHandler;
 import net.fabricmc.api.Side;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 
@@ -14,20 +14,20 @@ public class ClientSideHandler implements SideHandler {
 
 	@Override
 	public void runOnMainThread(Runnable runnable) {
-		if (MinecraftClient.getInstance().isMainThread()) {
+		if (Minecraft.getInstance().isMainThread()) {
 			runnable.run();
 		} else {
-			MinecraftClient.getInstance().scheduleOnMainThread(runnable);
+			Minecraft.getInstance().scheduleOnMainThread(runnable);
 		}
 	}
 
 	@Override
 	public EntityPlayer getClientPlayer() {
-		return MinecraftClient.getInstance().player;
+		return Minecraft.getInstance().player;
 	}
 
 	@Override
 	public MinecraftServer getServer() {
-		return MinecraftClient.getInstance().getServer();
+		return Minecraft.getInstance().getServer();
 	}
 }
