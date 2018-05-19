@@ -64,3 +64,91 @@ dependencies {
     compile 'org.spongepowered:mixin:0.7.8-SNAPSHOT'
     compile 'com.github.zafarkhaja:java-semver:0.9.0'
 }
+
+import net.fabricmc.loom.LoomGradleExtension;
+import net.fabricmc.loom.util.Constants
+
+import java.util.jar.JarFile
+import java.util.jar.JarOutputStream
+import java.util.regex.Pattern
+import java.util.zip.ZipEntry;
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.ClassVisitor
+import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
+
+static def pipe(InputStream is, OutputStream os){
+    try {
+        int n;
+        byte[] buffer = new byte[1024];
+        while ((n = is.read(buffer)) > -1) {
+            os.write(buffer, 0, n);   // Don't allow any extra bytes to creep in, final write
+        }
+        //os.close ();
+        is.close()
+    } catch (IOException e){
+        throw new RuntimeException(e)
+    }
+}
+
+class Visitor extends ClassVisitor{
+    static Pattern objectPattern = Pattern.compile(".*:Ljava/lang/Object;:.*");
+
+    public Visitor(ClassVisitor cv){
+        super(Opcodes.ASM5, cv);
+    }
+
+    @Override
+    void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        if (signature != null && objectPattern.matcher(signature).matches()){
+            signature = signature.replaceAll(":Ljava/lang/Object;:", "::")
+        }
+        super.visit(version, access, name, signature, superName, interfaces)
+    }
+}
+
+task fixGenerics {
+    doLast {
+        LoomGradleExtension extension = project.getExtensions().getByType(LoomGradleExtension.class)
+        def mappedJar = Constants.MINECRAFT_FINAL_JAR.get(extension)
+        if (mappedJar.exists()){
+            logger.lifecycle("Fixing generics in ${mappedJar.absolutePath}")
+            def tmpFile = new File(mappedJar.parentFile, mappedJar.name+".tmp")
+            if (tmpFile.exists())
+                tmpFile.delete()
+            if (!mappedJar.renameTo(tmpFile)){
+                throw new RuntimeException("Couldnt rename ${mappedJar.absolutePath} to ${tmpFile.absolutePath}")
+            }
+            def jarIn = new JarFile(tmpFile)
+            def jarOut = new JarOutputStream(new FileOutputStream(mappedJar));
+            /*def jarIn = new JarFile(mappedJar)
+            def jarOut = new JarOutputStream(new FileOutputStream(tmpFile));*/
+            jarIn.stream().forEach({ entry->
+                if (!entry.name.endsWith(".class")){
+                    try {
+                        jarOut.putNextEntry(new ZipEntry(entry))
+                    } catch (IOException e){
+                        throw new RuntimeException(e)
+                    }
+                    pipe(jarIn.getInputStream(entry), jarOut)
+                } else {
+                    InputStream clazzIn = jarIn.getInputStream(entry)
+                    ClassReader reader = new ClassReader(clazzIn)
+                    ClassWriter cw = new ClassWriter(0)
+                    reader.accept(new Visitor(cw), 0)
+                    try {
+                        jarOut.putNextEntry(new ZipEntry(entry.name))
+                    } catch (IOException e){
+                        throw new RuntimeException(e)
+                    }
+                    pipe(new ByteArrayInputStream(cw.toByteArray()), jarOut)
+                }
+            })
+            jarOut.close()
+            jarIn.close()
+            tmpFile.delete()
+        }
+    }
+}
+
+tasks.setup.finalizedBy(fixGenerics)
