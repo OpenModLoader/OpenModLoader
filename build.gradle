@@ -67,6 +67,8 @@ dependencies {
 
 import net.fabricmc.loom.LoomGradleExtension;
 import net.fabricmc.loom.util.Constants
+import org.objectweb.asm.FieldVisitor
+import org.objectweb.asm.MethodVisitor
 
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -98,12 +100,26 @@ class Visitor extends ClassVisitor{
         super(Opcodes.ASM5, cv);
     }
 
-    @Override
-    void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+    private String getFixedSignature(String signature){
         if (signature != null && objectPattern.matcher(signature).matches()){
             signature = signature.replaceAll(":Ljava/lang/Object;:", "::")
         }
-        super.visit(version, access, name, signature, superName, interfaces)
+        return signature;
+    }
+
+    @Override
+    void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        super.visit(version, access, name, getFixedSignature(signature), superName, interfaces)
+    }
+
+    @Override
+    MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+        return super.visitMethod(access, name, desc, getFixedSignature(signature), exceptions)
+    }
+
+    @Override
+    FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
+        return super.visitField(access, name, desc, getFixedSignature(signature), value)
     }
 }
 
