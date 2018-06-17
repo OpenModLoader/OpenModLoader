@@ -102,6 +102,8 @@ public final class OpenModLoader {
         LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
         LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
         LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
+
+        Block.REGISTRY.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(state -> Block.STATE_IDS.getId(state) == -1).forEach(Block.STATE_IDS::add));
     }
 
     private static void finalLoad() {
