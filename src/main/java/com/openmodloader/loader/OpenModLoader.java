@@ -13,6 +13,7 @@ import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.event.EventHandler;
 import com.openmodloader.loader.event.LoadEvent;
 import com.openmodloader.loader.exception.MissingModsException;
+import com.openmodloader.network.test.TestPackets;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
@@ -104,6 +105,8 @@ public final class OpenModLoader {
         LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
 
         Block.REGISTRY.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(state -> Block.STATE_IDS.getId(state) == -1).forEach(Block.STATE_IDS::add));
+
+	    TestPackets.load();
     }
 
     private static void finalLoad() {
