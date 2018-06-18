@@ -11,7 +11,7 @@ public abstract class MixinClientBrand {
      * @reason Change modification branding
      * @author Coded
      */
-    @Overwrite
+    @Overwrite(remap = false)
     public static String getClientModName() {
         return "OpenModLoader";
     }
