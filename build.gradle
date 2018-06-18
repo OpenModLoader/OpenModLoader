@@ -18,6 +18,11 @@ apply plugin: OpenGradlePlugin
 group 'com.openmodloader.loader'
 version '1.0.3'
 
+def ENV = System.getenv()
+if (ENV.BUILD_NUMBER) {
+	version = version + "." + "${System.getenv().BUILD_NUMBER}"
+}
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
