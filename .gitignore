@@ -20,3 +20,4 @@
 !/settings.gradle
 # Temporary
 !/OpenGradle-0.0.7-SNAPSHOT.jar
+!/BuildFile
