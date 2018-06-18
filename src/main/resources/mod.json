@@ -4,9 +4,10 @@
     "version": "1.13.0+pre-2"
   },
   {
-    "modid" : "openmodloader",
+    "modid": "openmodloader",
+    "name": "OpenModLoader",
     "version": "1.0.3",
-    "mixins" : [
+    "mixins": [
       "mixins.openmodloader.json",
       "mixins.openmodloader.networking.json"
     ],

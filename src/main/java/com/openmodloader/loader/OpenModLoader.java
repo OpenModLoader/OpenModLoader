@@ -1,6 +1,7 @@
 package com.openmodloader.loader;
 
 import com.github.zafarkhaja.semver.Version;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -15,8 +16,13 @@ import com.openmodloader.loader.event.LoadEvent;
 import com.openmodloader.loader.exception.MissingModsException;
 import com.openmodloader.network.test.TestPackets;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.resource.IPackFinder;
+import net.minecraft.resource.PackMetadata;
+import net.minecraft.resource.ResourcePackInfo;
+import net.minecraft.resource.pack.PhysicalResourcePack;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -103,14 +109,41 @@ public final class OpenModLoader {
         LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
         LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
         LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
-
         Block.REGISTRY.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(state -> Block.STATE_IDS.getId(state) == -1).forEach(Block.STATE_IDS::add));
-
-	    TestPackets.load();
+        TestPackets.load();
     }
 
     private static void finalLoad() {
         MOD_INFO_MAP.values().forEach(OpenModLoader::loadMod);
+        List<String> packsAdded = new ArrayList<>();
+        Map<String, PhysicalResourcePack> resourcePacks = new HashMap<>();
+        MOD_INFO_MAP.values().forEach(info -> {
+            if (info.getModId().equals("minecraft"))
+                return;
+            File origin = info.getOrigin();
+            if (!packsAdded.contains(origin.getAbsolutePath())) {
+                if (origin.isDirectory()) {
+                    resourcePacks.put(info.getModId(), new ModFolderPack(origin, info.getModId()));
+                } else {
+                    resourcePacks.put(info.getModId(), new ModFilePack(origin, info.getModId()));
+                }
+                packsAdded.add(origin.getAbsolutePath());
+            }
+        });
+        Minecraft.getInstance().getResourcePacks().addPackFinder(new IPackFinder() {
+            @Override
+            public <T extends ResourcePackInfo> void locateResourcePacks(Map<String, T> map, ResourcePackInfo.IFactory<T> iFactory) {
+                resourcePacks.forEach((id, pack) -> {
+                    PackMetadata metadata;
+                    try {
+                        metadata = pack.getPackMetadata(PackMetadata.a);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Missing pack.mcmeta for " + id);
+                    }
+                    map.put(Preconditions.checkNotNull(pack.getName(), "Mod Resources Name"), iFactory.create(pack.getName(), true, () -> pack, pack, metadata, ResourcePackInfo.Priority.BOTTOM));
+                });
+            }
+        });
     }
 
     private static void loadLibraries() {
@@ -180,7 +213,9 @@ public final class OpenModLoader {
                     File modJson = new File(f, "mod.json");
                     if (modJson.exists()) {
                         try {
-                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
+                            ModInfo[] infos = ModInfo.readFromFile(modJson);
+                            ArrayUtil.forEach(infos, info -> info.setOrigin(f));
+                            mods.addAll(Arrays.asList(infos));
                         } catch (FileNotFoundException e) {
                             LOGGER.error("Unable to load mod from directory " + f.getPath());
                             e.printStackTrace();
@@ -208,13 +243,13 @@ public final class OpenModLoader {
     }
 
     private static void loadMods() throws IOException {
-
         locateClasspathMods().forEach(OpenModLoader::addInfo);
         for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
             JarFile jar = new JarFile(file);
             ModInfo[] infos = ModInfo.readFromJar(jar);
             if (infos == null)
                 continue;
+            ArrayUtil.forEach(infos, info -> info.setOrigin(file));
             ArrayUtil.forEach(infos, OpenModLoader::addInfo);
         }
         setActiveMod(getModInfo("openmodloader"));
