@@ -23,7 +23,7 @@ public class EventHandler {
         CommandDispatcher<CommandSender> dispatcher = event.getCommandDispatcher();
         LiteralArgumentBuilder<CommandSender> builder = CommandManager.newArgument("openmodloader");
         builder.then(CommandManager.newArgument("version").executes(context -> {
-            context.getSource().sendCommandFeedback(new TextComponentString("OpenModLoader " + OpenModLoader.getVersion()), true);
+	        context.getSource().a(new TextComponentString("OpenModLoader " + OpenModLoader.getVersion()), true);
             return 0;
         }));
         dispatcher.register(builder.executes(context -> 0));

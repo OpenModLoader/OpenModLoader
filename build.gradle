@@ -23,8 +23,8 @@ apply plugin: 'java'
 sourceCompatibility = 1.8
 
 minecraft {
-    version = "18w22c"
-    pomfVersion = "6"
+    version = "1.13-pre2"
+    pomfVersion = "5"
     refmapName = "mixins.openmodloader.refmap.json"
 }
 
