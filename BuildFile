@@ -12,4 +12,6 @@ node {
    stage "Archive artifacts"
 
    sh "./gradlew publish --no-daemon"
+
+   archive 'build/libs/*'
 }
