@@ -32,7 +32,7 @@ sourceCompatibility = 1.8
 
 minecraft {
     version = minecraft_version
-    pomfVersion = "5"
+    pomfVersion = "9"
     refmapName = "mixins.openmodloader.refmap.json"
 }
 

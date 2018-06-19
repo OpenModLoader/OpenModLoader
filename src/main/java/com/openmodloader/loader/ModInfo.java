@@ -14,16 +14,27 @@ public class ModInfo {
     private String mcversion;
     private String side = "";
     private String mainClass = "";
+    private boolean library = false;
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
     private String [] mixins = new String[0];
 	private String [] dependencies = new String[0];
 	private String [] libraries = new String[0];
+	private File origin;
 
 	public ModInfo(String modid) {
         this.modid = modid;
     }
 
     public ModInfo() {
+    }
+
+    public File getOrigin() {
+        return origin;
+    }
+
+    public ModInfo setOrigin(File origin) {
+        this.origin = origin;
+        return this;
     }
 
     @Nullable
@@ -38,6 +49,10 @@ public class ModInfo {
         return OpenModLoader.getGson().fromJson(new InputStreamReader(new FileInputStream(modJson)), ModInfo[].class);
     }
 
+    public boolean isLibrary() {
+        return library;
+    }
+
     public String getModId() {
         return modid;
     }
@@ -50,7 +65,7 @@ public class ModInfo {
         return version;
     }
 
-    public String getMcVersion() {
+    public String getMinecraftVersion() {
         return mcversion;
     }
 
