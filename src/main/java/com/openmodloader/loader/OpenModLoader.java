@@ -136,7 +136,7 @@ public final class OpenModLoader {
                 resourcePacks.forEach((id, pack) -> {
                     PackMetadata metadata;
                     try {
-                        metadata = pack.getPackMetadata(PackMetadata.a);
+	                    metadata = pack.getPackMetadata(PackMetadata.DESERIALISER);
                     } catch (IOException e) {
                         throw new RuntimeException("Missing pack.mcmeta for " + id);
                     }
