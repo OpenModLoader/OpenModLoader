@@ -3,7 +3,8 @@
 
 # Folders
 !/gradle
-!/src
+!/src/main
+!/src/test
 !/mappings
 
 # Files
@@ -19,5 +20,4 @@
 !/README.md
 !/settings.gradle
 # Temporary
-!/OpenGradle-0.0.7-SNAPSHOT.jar
 !/BuildFile
