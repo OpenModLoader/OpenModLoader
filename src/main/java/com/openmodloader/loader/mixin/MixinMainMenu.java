@@ -10,10 +10,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiMainMenu.class)
-public class MixinMainMenu {
+public class MixinMainMenu extends GuiScreen {
 
 	@Inject(method = "draw(IIF)V", at = @At("RETURN"))
     public void draw(int mouseX, int mouseY, float delta, CallbackInfo i) {
-		OpenModLoader.EVENT_BUS.post(new GuiEvent.Draw<>((GuiScreen) (Object) this));
+		OpenModLoader.EVENT_BUS.post(new GuiEvent.Draw<>(this));
     }
+
 }
