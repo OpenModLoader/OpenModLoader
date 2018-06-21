@@ -5,6 +5,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.openmodloader.api.data.DataObject;
 import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.api.loader.SideHandler;
 import com.openmodloader.api.loader.language.ILanguageAdapter;
@@ -78,6 +79,10 @@ public final class OpenModLoader {
         return ImmutableSet.copyOf(MOD_INFO_MAP.keySet());
     }
 
+    public static Set<ModInfo> getActiveMods() {
+        return ImmutableSet.copyOf(MOD_INFO_MAP.values());
+    }
+
     public static Gson getGson() {
         return GSON;
     }
@@ -116,28 +121,28 @@ public final class OpenModLoader {
     }
 
     private static void finalLoad() {
-        MOD_INFO_MAP.values().forEach(OpenModLoader::loadMod);
-        Map<String, PhysicalResourcePack> resourcePacks = new HashMap<>();
-        MOD_INFO_MAP.values().forEach(info -> {
+        getActiveMods().forEach(OpenModLoader::loadMod);
+        Map<ModInfo, PhysicalResourcePack> resourcePacks = new HashMap<>();
+        getActiveMods().forEach(info -> {
             if (info.getModId().equals("minecraft"))
                 return;
             File origin = info.getOrigin();
             if (origin.isDirectory()) {
-                resourcePacks.put(info.getModId(), new ModFolderPack(origin, info));
+                resourcePacks.put(info, new ModFolderPack(origin, info));
             } else {
-                resourcePacks.put(info.getModId(), new ModFilePack(origin, info));
+                resourcePacks.put(info, new ModFilePack(origin, info));
             }
         });
         if (getSideHandler().getSide() == Side.CLIENT) {
             Minecraft.getInstance().getResourcePacks().addPackFinder(new IPackFinder() {
                 @Override
                 public <T extends ResourcePackInfo> void locateResourcePacks(Map<String, T> map, ResourcePackInfo.IFactory<T> iFactory) {
-                    resourcePacks.forEach((id, pack) -> {
+                    resourcePacks.forEach((info, pack) -> {
                         PackMetadata metadata;
                         try {
                             metadata = pack.getPackMetadata(PackMetadata.DESERIALISER);
                         } catch (IOException e) {
-                            metadata = new PackMetadata(new TextComponentString(pack.getName() + " Resources"), 4);
+                            metadata = new PackMetadata(new TextComponentString(pack.getName() + " Resources"), info.getAssetVersion());
                         }
                         map.put(Preconditions.checkNotNull(pack.getName(), "Mod Resources Name"), iFactory.create(pack.getName(), true, () -> pack, pack, metadata, ResourcePackInfo.Priority.BOTTOM));
                     });
@@ -147,11 +152,11 @@ public final class OpenModLoader {
     }
 
     private static void loadLibraries() {
-        for (ModInfo info : MOD_INFO_MAP.values()) {
+        for (ModInfo info : getActiveMods()) {
             ModInfo[] infos = downloadLibraries(info);
-            ArrayUtil.forEach(infos, info1 -> {
-                MOD_INFO_MAP.put(info1.getModId(), info1);
-                downloadLibraries(info1);
+            ArrayUtil.forEach(infos, libInfo -> {
+                addInfo(libInfo);
+                downloadLibraries(libInfo);
             });
         }
     }
@@ -166,24 +171,25 @@ public final class OpenModLoader {
     private static void scanDependencies() {
         Map<String, List<String>> missingMods = new HashMap<>();
         Map<String, List<String>> wrongVersionMods = new HashMap<>();
-        for (ModInfo info : MOD_INFO_MAP.values()) {
+        for (ModInfo info : getActiveMods()) {
             for (String depend : info.getDependencies()) {
                 String[] split = depend.split("@");
-                ModInfo dependInfo = getModInfo(split[0]);
-                if (dependInfo == null) {
-                    if (!missingMods.containsKey(info.getModId()))
-                        missingMods.put(info.getModId(), new ArrayList<>());
-                    missingMods.get(info.getModId()).add(depend);
-                    continue;
-                }
-                if (split.length > 1) {
-                    Version dependVersion = Version.valueOf(dependInfo.getVersion());
-                    if (!dependVersion.satisfies(split[1])) {
-                        if (!wrongVersionMods.containsKey(info.getModId()))
-                            wrongVersionMods.put(info.getModId(), new ArrayList<>());
-                        wrongVersionMods.get(info.getModId()).add(depend);
+                getModInfo(split[0]).ifPresent(dependInfo -> {
+                    if (dependInfo == null) {
+                        if (!missingMods.containsKey(info.getModId()))
+                            missingMods.put(info.getModId(), new ArrayList<>());
+                        missingMods.get(info.getModId()).add(depend);
+                        return;
                     }
-                }
+                    if (split.length > 1) {
+                        Version dependVersion = Version.valueOf(dependInfo.getVersion());
+                        if (!dependVersion.satisfies(split[1])) {
+                            if (!wrongVersionMods.containsKey(info.getModId()))
+                                wrongVersionMods.put(info.getModId(), new ArrayList<>());
+                            wrongVersionMods.get(info.getModId()).add(depend);
+                        }
+                    }
+                });
             }
             List<String> missing = missingMods.get(info.getModId());
             List<String> wrongVersion = wrongVersionMods.get(info.getModId());
@@ -252,7 +258,7 @@ public final class OpenModLoader {
             ArrayUtil.forEach(infos, info -> info.setOrigin(file));
             ArrayUtil.forEach(infos, OpenModLoader::addInfo);
         }
-        setActiveMod(getModInfo("openmodloader"));
+        getModInfo("openmodloader").ifPresent(OpenModLoader::setActiveMod).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
     }
 
     private static void addInfo(ModInfo info) {
@@ -263,16 +269,11 @@ public final class OpenModLoader {
         return sideHandler;
     }
 
-    public static ModInfo getModInfo(String modid) {
-        return MOD_INFO_MAP.get(modid);
-    }
-
-    public static void ifModLoaded(String modid, Runnable runnable) {
-        if (getModInfo(modid) != null)
-            runnable.run();
+    public static DataObject<ModInfo> getModInfo(String modid) {
+        return DataObject.of(MOD_INFO_MAP.get(modid));
     }
 
     public static String getVersion() {
-        return getModInfo("openmodloader").getVersion();
+        return getModInfo("openmodloader").map(ModInfo::getVersion).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
     }
 }

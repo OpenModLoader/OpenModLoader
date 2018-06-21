@@ -15,6 +15,7 @@ public class ModInfo {
     private String side = "";
     private String mainClass = "";
     private String icon = "";
+    private int assetVersion = 4;
     private boolean library = false;
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
     private String[] mixins = new String[0];
@@ -72,6 +73,10 @@ public class ModInfo {
 
     public String getMinecraftVersion() {
         return mcversion;
+    }
+
+    public int getAssetVersion() {
+        return assetVersion;
     }
 
     public String getSide() {

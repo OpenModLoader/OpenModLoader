@@ -1,5 +1,6 @@
 package com.openmodloader.loader.launch;
 
+import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.ModInfo;
 import net.fabricmc.api.Side;
 import net.minecraft.launchwrapper.Launch;
@@ -29,9 +30,7 @@ public class MixinLoader {
         MixinBootstrap.init();
 
         findMods(modsDir);
-        mods.values().forEach(modInfo -> {
-            Arrays.stream(modInfo.getMixins()).forEach(Mixins::addConfiguration);
-        });
+        mods.values().forEach(modInfo -> ArrayUtil.forEach(modInfo.getMixins(), Mixins::addConfiguration));
     }
 
     //This has to be done seperate from the main mod loading as it is on a different class path

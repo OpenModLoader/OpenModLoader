@@ -100,7 +100,7 @@ public class EventBus {
         OpenModLoader.setCurrentPhase(context.phase);
         for (Pair<Pair<String, Object>, Method> pair : subscribers.get(event.getClass())) {
             Pair<String, Object> modContext = pair.getFirst();
-            OpenModLoader.setActiveMod(OpenModLoader.getModInfo(modContext.getFirst()));
+            OpenModLoader.getModInfo(modContext.getFirst()).ifPresent(OpenModLoader::setActiveMod);
             Method method = pair.getSecond();
             Event.Subscribe subscribe = method.getAnnotation(Event.Subscribe.class);
             if (subscribe.phase() != context.phase)
