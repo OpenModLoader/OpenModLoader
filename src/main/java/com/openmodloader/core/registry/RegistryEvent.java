@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.IRegistry;
 
 import java.lang.reflect.Type;
+import java.util.Map;
 
 public class RegistryEvent<T> implements Event.Generic, Event.PhaseLimit {
     private final IRegistry<Identifier, T> registry;
@@ -35,5 +36,9 @@ public class RegistryEvent<T> implements Event.Generic, Event.PhaseLimit {
 
     public void register(Identifier identifier, T value) {
         registry.put(identifier, value);
+    }
+
+    public void registerAll(Map<Identifier, T> map) {
+        map.forEach(this::register);
     }
 }

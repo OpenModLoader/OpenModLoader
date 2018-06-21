@@ -1,7 +1,6 @@
 package com.openmodloader.loader.launch;
 
 import net.fabricmc.api.Side;
-import net.minecraft.client.main.Main;
 
 import java.io.File;
 import java.util.List;

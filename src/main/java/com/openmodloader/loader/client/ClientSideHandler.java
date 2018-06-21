@@ -12,22 +12,22 @@ public class ClientSideHandler implements SideHandler {
         return Side.CLIENT;
     }
 
-	@Override
-	public void runOnMainThread(Runnable runnable) {
-		if (Minecraft.getInstance().isMainThread()) {
-			runnable.run();
-		} else {
-			Minecraft.getInstance().scheduleOnMainThread(runnable);
-		}
-	}
+    @Override
+    public void runOnMainThread(Runnable runnable) {
+        if (Minecraft.getInstance().isMainThread()) {
+            runnable.run();
+        } else {
+            Minecraft.getInstance().scheduleOnMainThread(runnable);
+        }
+    }
 
-	@Override
-	public EntityPlayer getClientPlayer() {
-		return Minecraft.getInstance().player;
-	}
+    @Override
+    public EntityPlayer getClientPlayer() {
+        return Minecraft.getInstance().player;
+    }
 
-	@Override
-	public MinecraftServer getServer() {
-		return Minecraft.getInstance().getServer();
-	}
+    @Override
+    public MinecraftServer getServer() {
+        return Minecraft.getInstance().getServer();
+    }
 }

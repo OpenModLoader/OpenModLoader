@@ -18,69 +18,69 @@ import java.util.jar.JarFile;
 
 public class MixinLoader {
 
-	public static Map<String, ModInfo> mods = new HashMap<>();
-	protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
+    public static Map<String, ModInfo> mods = new HashMap<>();
+    protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
 
 
-	public static void initMixins(Side side, File modsDir) throws IOException {
+    public static void initMixins(Side side, File modsDir) throws IOException {
 
         //TODO at this point read all of the pre appied mixins, and prevent them from being loaded
 
         MixinBootstrap.init();
 
-	    findMods(modsDir);
-	    mods.values().forEach(modInfo -> {
-		    Arrays.stream(modInfo.getMixins()).forEach(Mixins::addConfiguration);
-	    });
+        findMods(modsDir);
+        mods.values().forEach(modInfo -> {
+            Arrays.stream(modInfo.getMixins()).forEach(Mixins::addConfiguration);
+        });
     }
 
     //This has to be done seperate from the main mod loading as it is on a different class path
-	private static List<ModInfo> locateClasspathMods(File modsDir) {
-		List<ModInfo> mods = new ArrayList<>();
-		String javaHome = System.getProperty("java.home");
+    private static List<ModInfo> locateClasspathMods(File modsDir) {
+        List<ModInfo> mods = new ArrayList<>();
+        String javaHome = System.getProperty("java.home");
 
-		URL[] urls = Launch.classLoader.getURLs();
-		for (URL url : urls) {
-			if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
-				continue;
-			}
-			LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
+        URL[] urls = Launch.classLoader.getURLs();
+        for (URL url : urls) {
+            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
+                continue;
+            }
+            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
 
-			File f = new File(url.getFile());
-			if (f.exists()) {
-				if (f.isDirectory()) {
-					File modJson = new File(f, "mod.json");
-					if (modJson.exists()) {
-						try {
-							mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
-						} catch (FileNotFoundException e) {
-							LOGGER.error("Unable to load mod from directory " + f.getPath());
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-		return mods;
-	}
+            File f = new File(url.getFile());
+            if (f.exists()) {
+                if (f.isDirectory()) {
+                    File modJson = new File(f, "mod.json");
+                    if (modJson.exists()) {
+                        try {
+                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
+                        } catch (FileNotFoundException e) {
+                            LOGGER.error("Unable to load mod from directory " + f.getPath());
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+        return mods;
+    }
 
-	private static void findMods( File modsDir) throws IOException {
-		for (ModInfo info : locateClasspathMods(modsDir)) {
-			mods.put(info.getModId(), info);
-		}
-		if(!modsDir.exists()){
-			modsDir.mkdir();
-		}
-		for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
-			JarFile jar = new JarFile(file);
-			ModInfo[] infos = ModInfo.readFromJar(jar);
-			if (infos == null)
-				continue;
-			for (ModInfo info : infos) {
-				mods.put(info.getModId(), info);
-			}
-		}
-	}
+    private static void findMods(File modsDir) throws IOException {
+        for (ModInfo info : locateClasspathMods(modsDir)) {
+            mods.put(info.getModId(), info);
+        }
+        if (!modsDir.exists()) {
+            modsDir.mkdir();
+        }
+        for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
+            JarFile jar = new JarFile(file);
+            ModInfo[] infos = ModInfo.readFromJar(jar);
+            if (infos == null)
+                continue;
+            for (ModInfo info : infos) {
+                mods.put(info.getModId(), info);
+            }
+        }
+    }
 
 
 }

@@ -128,7 +128,7 @@ public final class OpenModLoader {
                 resourcePacks.put(info.getModId(), new ModFilePack(origin, info));
             }
         });
-        if(getSideHandler().getSide()== Side.CLIENT) {
+        if (getSideHandler().getSide() == Side.CLIENT) {
             Minecraft.getInstance().getResourcePacks().addPackFinder(new IPackFinder() {
                 @Override
                 public <T extends ResourcePackInfo> void locateResourcePacks(Map<String, T> map, ResourcePackInfo.IFactory<T> iFactory) {

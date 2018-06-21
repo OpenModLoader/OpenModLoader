@@ -19,7 +19,7 @@ public class MixinMinecraftClient {
         OpenModLoader.initialize(Minecraft.getInstance().runDirectory, new ClientSideHandler());
     }
 
-	@Inject(method = "openGui", at = @At("RETURN"))
+    @Inject(method = "openGui", at = @At("RETURN"))
     public void openGui(GuiScreen screen, CallbackInfo info) {
         if (screen != null)
             OpenModLoader.EVENT_BUS.post(new GuiEvent.Open<>(screen));

@@ -17,25 +17,16 @@ public class ModInfo {
     private String icon = "";
     private boolean library = false;
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
-    private String [] mixins = new String[0];
-	private String [] dependencies = new String[0];
-	private String [] libraries = new String[0];
-	private File origin;
+    private String[] mixins = new String[0];
+    private String[] dependencies = new String[0];
+    private String[] libraries = new String[0];
+    private File origin;
 
-	public ModInfo(String modid) {
+    public ModInfo(String modid) {
         this.modid = modid;
     }
 
     public ModInfo() {
-    }
-
-    public File getOrigin() {
-        return origin;
-    }
-
-    public ModInfo setOrigin(File origin) {
-        this.origin = origin;
-        return this;
     }
 
     @Nullable
@@ -48,6 +39,15 @@ public class ModInfo {
 
     public static ModInfo[] readFromFile(File modJson) throws FileNotFoundException {
         return OpenModLoader.getGson().fromJson(new InputStreamReader(new FileInputStream(modJson)), ModInfo[].class);
+    }
+
+    public File getOrigin() {
+        return origin;
+    }
+
+    public ModInfo setOrigin(File origin) {
+        this.origin = origin;
+        return this;
     }
 
     public boolean isLibrary() {
@@ -86,9 +86,9 @@ public class ModInfo {
         return languageAdapter;
     }
 
-	public String[] getMixins() {
-		return mixins;
-	}
+    public String[] getMixins() {
+        return mixins;
+    }
 
     public String[] getDependencies() {
         return dependencies;

@@ -7,9 +7,9 @@ import net.minecraft.server.MinecraftServer;
 public interface SideHandler {
     Side getSide();
 
-	void runOnMainThread(Runnable runnable);
+    void runOnMainThread(Runnable runnable);
 
-	EntityPlayer getClientPlayer();
+    EntityPlayer getClientPlayer();
 
-	MinecraftServer getServer();
+    MinecraftServer getServer();
 }

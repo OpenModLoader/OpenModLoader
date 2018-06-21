@@ -6,28 +6,28 @@ import net.minecraft.util.PacketByteBuf;
 
 public class TestClientPacket implements IPacket {
 
-	String name;
+    String name;
 
-	public TestClientPacket(String name) {
-		this.name = name;
-	}
+    public TestClientPacket(String name) {
+        this.name = name;
+    }
 
-	public TestClientPacket() {
-	}
+    public TestClientPacket() {
+    }
 
-	@Override
-	public void write(PacketByteBuf byteBuf) {
-		byteBuf.writeInt(name.length());
-		byteBuf.writeString(name);
-	}
+    @Override
+    public void write(PacketByteBuf byteBuf) {
+        byteBuf.writeInt(name.length());
+        byteBuf.writeString(name);
+    }
 
-	@Override
-	public void read(PacketByteBuf byteBuf) {
-		name = byteBuf.readString(byteBuf.readInt());
-	}
+    @Override
+    public void read(PacketByteBuf byteBuf) {
+        name = byteBuf.readString(byteBuf.readInt());
+    }
 
-	@Override
-	public void handle(Side side) {
-		System.out.println("Hello from the server, the client sent: " + name);
-	}
+    @Override
+    public void handle(Side side) {
+        System.out.println("Hello from the server, the client sent: " + name);
+    }
 }

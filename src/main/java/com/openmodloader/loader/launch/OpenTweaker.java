@@ -1,6 +1,5 @@
 package com.openmodloader.loader.launch;
 
-import com.openmodloader.loader.OpenModLoader;
 import net.fabricmc.api.Side;
 import net.minecraft.launchwrapper.ITweaker;
 import net.minecraft.launchwrapper.Launch;
@@ -49,11 +48,11 @@ public abstract class OpenTweaker implements ITweaker {
 
     @Override
     public void injectIntoClassLoader(LaunchClassLoader launchClassLoader) {
-	    try {
-		    MixinLoader.initMixins(getSide(), new File(runDir, "mods"));
-	    } catch (IOException e) {
-		    throw new RuntimeException("Failed to setup open mod loader", e);
-	    }
+        try {
+            MixinLoader.initMixins(getSide(), new File(runDir, "mods"));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to setup open mod loader", e);
+        }
         MixinEnvironment.getDefaultEnvironment().setSide(getSide() == Side.CLIENT ? MixinEnvironment.Side.CLIENT : MixinEnvironment.Side.SERVER);
         launchClassLoader.registerTransformer("com.openmodloader.loader.transformer.AccessTransformer");
     }
