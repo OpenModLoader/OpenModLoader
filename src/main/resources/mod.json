@@ -7,6 +7,7 @@
     "modid": "openmodloader",
     "name": "OpenModLoader",
     "version": "1.0.3",
+    "icon": "oml.png",
     "mixins": [
       "mixins.openmodloader.json",
       "mixins.openmodloader.networking.json"

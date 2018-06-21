@@ -1,6 +1,7 @@
 package com.openmodloader.loader;
 
 import com.google.common.collect.Lists;
+import joptsimple.internal.Strings;
 import net.minecraft.resource.ResourceNotFoundException;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.pack.PhysicalResourcePack;
@@ -18,19 +19,26 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class ModFolderPack extends PhysicalResourcePack {
-    private final String modDomain;
+    private final ModInfo modInfo;
 
-    public ModFolderPack(File aFile1, String modDomain) {
+    public ModFolderPack(File aFile1, ModInfo modInfo) {
         super(aFile1);
-        this.modDomain = modDomain;
+        this.modInfo = modInfo;
     }
 
     @Override
     protected InputStream openByPath(String path) throws IOException {
+        boolean pack = false;
+        if (path.equals("pack.png") || path.equals(modInfo.getIcon())) {
+            pack = true;
+            path = modInfo.getIcon();
+        }
         File v1 = new File(this.location, path);
         if (v1.exists() && v1.isFile()) {
             return new FileInputStream(v1);
         }
+        if (pack)
+            return ModFolderPack.class.getResourceAsStream("/missing.png");
         throw new ResourceNotFoundException(this.location, path);
     }
 
@@ -43,7 +51,7 @@ public class ModFolderPack extends PhysicalResourcePack {
     public Collection<Identifier> listFiles(ResourceType type, String path, int i, Predicate<String> predicate) {
         File v1 = new File(this.location, type.getFolder());
         List<Identifier> v2 = Lists.newArrayList();
-        this.a(new File(new File(v1, modDomain), path), i, modDomain, v2, path + "/", predicate);
+        this.a(new File(new File(v1, modInfo.getModId()), path), i, modInfo.getModId(), v2, path + "/", predicate);
         return v2;
     }
 
@@ -73,17 +81,16 @@ public class ModFolderPack extends PhysicalResourcePack {
 
     @Override
     public Set<String> getResourceDomains(ResourceType type) {
-        return Collections.singleton(modDomain);
+        return Collections.singleton(modInfo.getModId());
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
 
     }
 
     @Override
     public String getName() {
-        ModInfo info = OpenModLoader.getModInfo(modDomain);
-        return info == null ? modDomain : info.getName() == null ? modDomain : info.getName();
+        return Strings.isNullOrEmpty(modInfo.getName()) ? modInfo.getModId() : modInfo.getName();
     }
 }

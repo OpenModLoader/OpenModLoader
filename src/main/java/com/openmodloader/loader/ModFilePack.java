@@ -16,12 +16,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class ModFilePack extends PhysicalResourcePack {
+    private final ModInfo modInfo;
     private ZipFile zipFile;
-    private String modDomain;
 
-    public ModFilePack(File aFile1, String domain) {
+    public ModFilePack(File aFile1, ModInfo modInfo) {
         super(aFile1);
-        this.modDomain = domain;
+        this.modInfo = modInfo;
         try {
             zipFile = new ZipFile(aFile1);
         } catch (IOException e) {
@@ -31,9 +31,19 @@ public class ModFilePack extends PhysicalResourcePack {
 
     @Override
     protected InputStream openByPath(String path) throws IOException {
+        boolean pack = false;
+        if (path.equals("pack.png") || path.equals(modInfo.getIcon())) {
+            pack = true;
+            path = modInfo.getIcon();
+        }
         ZipEntry entry = zipFile.getEntry(path);
-        if (entry == null)
-            throw new ResourceNotFoundException(this.location, path);
+        if (entry == null) {
+            if (pack) {
+                entry = zipFile.getEntry("/missing.png");
+            }
+            if (entry == null)
+                throw new ResourceNotFoundException(this.location, path);
+        }
         return zipFile.getInputStream(entry);
     }
 
@@ -69,7 +79,7 @@ public class ModFilePack extends PhysicalResourcePack {
 
     @Override
     public Set<String> getResourceDomains(ResourceType type) {
-        return Collections.singleton(modDomain);
+        return Collections.singleton(modInfo.getModId());
     }
 
     @Override

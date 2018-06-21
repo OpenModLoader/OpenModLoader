@@ -14,6 +14,7 @@ public class ModInfo {
     private String mcversion;
     private String side = "";
     private String mainClass = "";
+    private String icon = "";
     private boolean library = false;
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
     private String [] mixins = new String[0];
@@ -59,6 +60,10 @@ public class ModInfo {
 
     public String getName() {
         return name;
+    }
+
+    public String getIcon() {
+        return icon.isEmpty() ? modid + ".png" : icon;
     }
 
     public String getVersion() {
