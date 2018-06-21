@@ -27,7 +27,7 @@ public class MixinBlock implements IRegistryEntry<Block> {
         this.registryName = identifier;
     }
 
-    @Inject(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/DefaultMappedRegistry;checkDefault()V"))
+    @Inject(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/DefaultMappedRegistry;checkDefault()V", shift = At.Shift.BEFORE))
     private static void registerBlocks(CallbackInfo info) {
         OpenModLoader.LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
     }

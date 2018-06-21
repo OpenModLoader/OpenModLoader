@@ -18,7 +18,7 @@ public abstract class MixinCommandManager {
     @Final
     private CommandDispatcher<CommandSender> commandDispatcher;
 
-    @Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/brigadier/CommandDispatcher;findAmbiguities(Lcom/mojang/brigadier/AmbiguityConsumer;)V", remap = false))
+    @Inject(method = "<init>", at = @At(value = "RETURN"))
     public void constructor(boolean dediServer, CallbackInfo info) {
         OpenModLoader.LOAD_BUS.post(new RegisterCommandsEvent(commandDispatcher));
     }
