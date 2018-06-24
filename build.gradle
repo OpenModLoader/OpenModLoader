@@ -36,7 +36,7 @@ sourceSets {
 
 minecraft {
     version = minecraft_version
-    pomfVersion = "4"
+    pomfVersion = "7"
     refmapName = "mixins.openmodloader.refmap.json"
 }
 
