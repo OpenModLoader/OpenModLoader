@@ -3,8 +3,7 @@
 
 # Folders
 !/gradle
-!/src/main
-!/src/test
+!/src
 !/mappings
 
 # Files

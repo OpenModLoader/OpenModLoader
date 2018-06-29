@@ -17,20 +17,21 @@ public class NetworkManager {
 
     public static final Identifier CHANNEL = new Identifier("oml", "custom");
 
-    private static HashMap<Integer, Class<? extends IPacket>> packetMap = new HashMap<>();
+    private static HashMap<Identifier, Class<? extends IPacket>> packetMap = new HashMap<>();
 
     //TODO are events used for registration?
-    public static int registerPacket(Class<? extends IPacket> packet) {
-        int id = packetMap.size();
+    public static void registerPacket(Identifier identifier, Class<? extends IPacket> packet) {
+	    if (packetMap.containsKey(identifier)) {
+		    throw new RuntimeException("Packet already registered with this name!");
+	    }
         if (packetMap.containsValue(packet)) {
             throw new RuntimeException("Packet already registered!");
         }
-        packetMap.put(id, packet);
-        return id;
+        packetMap.put(identifier, packet);
     }
 
     public static void handleIncomingPacket(PacketByteBuf byteBuf, Side side) {
-        int id = byteBuf.readInt();
+        Identifier id = new Identifier(byteBuf.readString(byteBuf.readInt()));
         if (packetMap.containsKey(id)) {
             Class<? extends IPacket> packetClass = packetMap.get(id);
             IPacket packet;
@@ -55,9 +56,10 @@ public class NetworkManager {
         if (!packetMap.containsValue(packet.getClass())) {
             throw new RuntimeException("Outgoing packet hasnt been registered!");
         }
-        int id = getKeysByValue(packetMap, packet.getClass()).get();
+        Identifier identifier = getKeysByValue(packetMap, packet.getClass()).get();
         PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
-        byteBuf.writeInt(id);
+        byteBuf.writeInt(identifier.toString().length());
+        byteBuf.writeString(identifier.toString());
         packet.write(byteBuf);
         return byteBuf;
     }

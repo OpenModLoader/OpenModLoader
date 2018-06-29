@@ -6,11 +6,12 @@ import com.openmodloader.loader.event.GuiEvent;
 import com.openmodloader.network.NetworkManager;
 import net.fabricmc.api.Side;
 import net.fabricmc.api.Sided;
+import net.minecraft.util.Identifier;
 
 public class TestPackets {
 
     public static void load() {
-        NetworkManager.registerPacket(TestClientPacket.class);
+        NetworkManager.registerPacket(new Identifier("oml", "testpacket"), TestClientPacket.class);
         OpenModLoader.EVENT_BUS.register(new TestPackets());
     }
 

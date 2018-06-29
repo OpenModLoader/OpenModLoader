@@ -1,5 +1,6 @@
 package com.openmodloader.network.mixin;
 
+import com.openmodloader.network.IPacketData;
 import com.openmodloader.network.NetworkManager;
 import net.fabricmc.api.Side;
 import net.minecraft.network.handler.NetworkGameHandlerServer;
@@ -15,8 +16,9 @@ public abstract class SPacketHandler {
 
     @Inject(method = "onCustomPayload(Lnet/minecraft/network/packet/server/SPacketCustomPayload;)V", at = @At("RETURN"))
     public void onCustomPayload(SPacketCustomPayload packet, CallbackInfo info) {
-        if (packet.getChannel().equals(NetworkManager.CHANNEL)) {
-            PacketByteBuf buf = packet.getData();
+	    IPacketData packetData = (IPacketData) packet;
+        if (packetData.getChannel().equals(NetworkManager.CHANNEL)) {
+            PacketByteBuf buf = packetData.getData();
             NetworkManager.handleIncomingPacket(buf, Side.SERVER);
         }
     }
