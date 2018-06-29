@@ -8,13 +8,14 @@ import net.minecraft.client.player.EntityPlayerClient;
 import net.minecraft.entity.player.EntityPlayerServer;
 import net.minecraft.network.packet.server.SPacketCustomPayload;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
 import java.util.*;
 
 public class NetworkManager {
 
-    public static String CHANNEL = "oml";
+    public static final Identifier CHANNEL = new Identifier("oml", "custom");
 
     private static HashMap<Integer, Class<? extends IPacket>> packetMap = new HashMap<>();
 

@@ -3,13 +3,13 @@ package com.openmodloader.loader.mixin;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
+import com.mojang.datafixers.DataFixer;
 import com.openmodloader.loader.OpenModLoader;
 import com.openmodloader.loader.server.ServerSideHandler;
 import net.minecraft.command.CommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.UserCache;
-import net.minecraft.util.datafix.Datafix;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,8 +23,8 @@ import java.net.Proxy;
 @Mixin(value = DedicatedServer.class)
 public abstract class MixinDedicatedServer extends MinecraftServer {
 
-    public MixinDedicatedServer(@Nullable File aFile1, Proxy aProxy2, Datafix aDatafix3, CommandManager aCommandManager4, YggdrasilAuthenticationService aYggdrasilAuthenticationService5, MinecraftSessionService aMinecraftSessionService6, GameProfileRepository aGameProfileRepository7, UserCache aUserCache8) {
-        super(aFile1, aProxy2, aDatafix3, aCommandManager4, aYggdrasilAuthenticationService5, aMinecraftSessionService6, aGameProfileRepository7, aUserCache8);
+    public MixinDedicatedServer(@Nullable File aFile1, Proxy aProxy2, DataFixer aDataFixer3, CommandManager aCommandManager4, YggdrasilAuthenticationService aYggdrasilAuthenticationService5, MinecraftSessionService aMinecraftSessionService6, GameProfileRepository aGameProfileRepository7, UserCache aUserCache8) {
+        super(aFile1, aProxy2, aDataFixer3, aCommandManager4, aYggdrasilAuthenticationService5, aMinecraftSessionService6, aGameProfileRepository7, aUserCache8);
     }
 
     @Inject(method = "setupServer", at = @At("HEAD"))
