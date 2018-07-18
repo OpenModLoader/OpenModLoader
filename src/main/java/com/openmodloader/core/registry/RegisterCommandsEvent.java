@@ -1,6 +1,7 @@
 package com.openmodloader.core.registry;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.loader.event.LoadEvent;
@@ -11,6 +12,10 @@ public class RegisterCommandsEvent extends LoadEvent implements Event.PhaseLimit
 
     public RegisterCommandsEvent(CommandDispatcher<CommandSender> dispatcher) {
         this.dispatcher = dispatcher;
+    }
+
+    public void register(LiteralArgumentBuilder<CommandSender> command) {
+        dispatcher.register(command);
     }
 
     @Override

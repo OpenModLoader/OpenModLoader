@@ -59,7 +59,7 @@ public class NetworkManager {
         Identifier identifier = getKeysByValue(packetMap, packet.getClass()).get();
         PacketByteBuf byteBuf = new PacketByteBuf(Unpooled.buffer());
         byteBuf.writeInt(identifier.toString().length());
-        byteBuf.writeString(identifier.toString());
+        byteBuf.a(identifier.toString());
         packet.write(byteBuf);
         return byteBuf;
     }
@@ -74,12 +74,12 @@ public class NetworkManager {
     }
 
     public static void sendToPlayer(IPacket packet, EntityPlayerServer player) {
-        player.networkHandler.sendPacket(new SPacketCustomPayload(CHANNEL, buildPacketData(packet)));
+        player.networkHandler.a(new SPacketCustomPayload(CHANNEL, buildPacketData(packet)));
     }
 
     public static void sendToPlayers(IPacket packet, List<EntityPlayerServer> players) {
         SPacketCustomPayload packetPayload = new SPacketCustomPayload(CHANNEL, buildPacketData(packet));
-        players.forEach(playerServer -> playerServer.networkHandler.sendPacket(packetPayload));
+        players.forEach(playerServer -> playerServer.networkHandler.a(packetPayload));
 
     }
 

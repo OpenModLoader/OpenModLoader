@@ -18,7 +18,7 @@ public class TestClientPacket implements IPacket {
     @Override
     public void write(PacketByteBuf byteBuf) {
         byteBuf.writeInt(name.length());
-        byteBuf.writeString(name);
+        byteBuf.a(name);
     }
 
     @Override

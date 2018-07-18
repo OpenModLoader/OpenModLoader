@@ -16,7 +16,7 @@ buildscript{
 apply plugin: OpenGradlePlugin
 group 'com.openmodloader.loader'
 
-def minecraft_version = "1.13-pre5"
+def minecraft_version = "1.13-pre10"
 version minecraft_version + '-1.0.3'
 
 def ENV = System.getenv()
@@ -36,7 +36,7 @@ sourceSets {
 
 minecraft {
     version = minecraft_version
-    pomfVersion = "3"
+    pomfVersion = "9"
     refmapName = "mixins.openmodloader.refmap.json"
 }
 
