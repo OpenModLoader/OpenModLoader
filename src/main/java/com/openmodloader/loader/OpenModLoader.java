@@ -63,6 +63,10 @@ public final class OpenModLoader {
         return currentPhase;
     }
 
+    public static Side getCurrentSide() {
+        return getSideHandler().getSide();
+    }
+
     public static void setCurrentPhase(EventPhase currentPhase) {
         OpenModLoader.currentPhase = currentPhase;
     }
@@ -112,10 +116,12 @@ public final class OpenModLoader {
         EventHandler handler = new EventHandler();
         EVENT_BUS.register(handler);
         LOAD_BUS.register(handler);
-        LOAD_BUS.post(new LoadEvent.BusRegistration());
+        LOAD_BUS.post(new LoadEvent.Construction());
         LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
         LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
+        LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
         TestPackets.load();
+        LOAD_BUS.post(new LoadEvent.Finalization());
     }
 
     private static void finalLoad() {

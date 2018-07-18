@@ -4,10 +4,9 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
-import com.openmodloader.loader.event.LoadEvent;
 import net.minecraft.command.CommandSender;
 
-public class RegisterCommandsEvent extends LoadEvent implements Event.PhaseLimit {
+public class RegisterCommandsEvent implements Event.PhaseLimit {
     private CommandDispatcher<CommandSender> dispatcher;
 
     public RegisterCommandsEvent(CommandDispatcher<CommandSender> dispatcher) {

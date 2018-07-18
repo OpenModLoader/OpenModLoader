@@ -2,6 +2,9 @@ package com.openmodloader.core.event;
 
 import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
+import com.openmodloader.core.event.manual.CancellableManualEvent;
+import com.openmodloader.core.event.manual.ManualEvent;
+import com.openmodloader.core.event.manual.ResultManualEvent;
 import com.openmodloader.loader.ModInfo;
 import com.openmodloader.loader.OpenModLoader;
 import net.minecraft.util.Pair;
@@ -53,6 +56,18 @@ public class EventBus {
         }
     }
 
+    public <T extends Event> ManualEvent<T> postManually(@Nonnull T event) {
+        return new ManualEvent<>(event, this, new EventContext());
+    }
+
+    public <T extends Event.Cancellable> CancellableManualEvent<T> postManually(@Nonnull T event) {
+        return new CancellableManualEvent<>(event, this, new EventContext());
+    }
+
+    public <R, T extends Event.WithResult<R>> ResultManualEvent<R, T> postManually(@Nonnull T event) {
+        return new ResultManualEvent<>(event, this, new EventContext());
+    }
+
     public <T extends Event> T post(@Nonnull T event) {
         EventContext context = new EventContext();
         if (event instanceof Event.WithResult)
@@ -94,7 +109,7 @@ public class EventBus {
         return context.cancelled;
     }
 
-    private void post(@Nonnull Event event, EventContext context) {
+    public void post(@Nonnull Event event, EventContext context) {
         if (!subscribers.containsKey(event.getClass()))
             return;
         OpenModLoader.setCurrentPhase(context.phase);

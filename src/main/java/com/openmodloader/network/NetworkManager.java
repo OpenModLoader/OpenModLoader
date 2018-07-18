@@ -15,7 +15,7 @@ import java.util.*;
 
 public class NetworkManager {
 
-    public static final Identifier CHANNEL = new Identifier("oml", "custom");
+    public static final Identifier CHANNEL = new Identifier("openmodloader", "custom");
 
     private static HashMap<Identifier, Class<? extends IPacket>> packetMap = new HashMap<>();
 
