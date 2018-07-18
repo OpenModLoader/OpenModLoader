@@ -19,12 +19,16 @@ import com.openmodloader.network.test.TestPackets;
 import net.fabricmc.api.Side;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.launchwrapper.Launch;
+import net.minecraft.potion.Potion;
 import net.minecraft.resource.IPackFinder;
 import net.minecraft.resource.PackMetadata;
 import net.minecraft.resource.ResourcePackInfo;
 import net.minecraft.resource.pack.PhysicalResourcePack;
+import net.minecraft.sound.Sound;
 import net.minecraft.text.TextComponentString;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
@@ -118,8 +122,15 @@ public final class OpenModLoader {
         LOAD_BUS.register(handler);
         LOAD_BUS.post(new LoadEvent.Construction());
         LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
-        LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
         LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
+        LOAD_BUS.post(new RegistryEvent<>(Fluid.REGISTRY, Fluid.class));
+        LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
+        LOAD_BUS.post(new RegistryEvent<>(Enchantment.REGISTRY, Enchantment.class));
+        LOAD_BUS.post(new RegistryEvent<>(Potion.REGISTRY, Potion.class));
+        LOAD_BUS.post(new RegistryEvent<>(Sound.REGISTRY, Sound.class));
+        Block.REGISTRY.forEach(block -> block.getStateContainer().getValidStates().stream().filter(
+                state -> Block.STATE_IDS.getId(state) == -1
+        ).forEach(Block.STATE_IDS::add));
         TestPackets.load();
         LOAD_BUS.post(new LoadEvent.Finalization());
     }
