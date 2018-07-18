@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public class TestPackets {
 
     public static void load() {
-        NetworkManager.registerPacket(new Identifier("oml", "testpacket"), TestClientPacket.class);
+        NetworkManager.registerPacket(new Identifier("openmodloader", "testpacket"), TestClientPacket.class);
         OpenModLoader.EVENT_BUS.register(new TestPackets());
     }
 

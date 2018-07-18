@@ -25,7 +25,7 @@ public class MixinLoader {
 
     public static void initMixins(Side side, File modsDir) throws IOException {
 
-        //TODO at this point read all of the pre appied mixins, and prevent them from being loaded
+        //TODO at this point read all of the pre applied mixins, and prevent them from being loaded
 
         MixinBootstrap.init();
 

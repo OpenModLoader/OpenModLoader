@@ -26,7 +26,7 @@ public class DataObject<V> {
 
     @Nullable
     public V get() {
-        return value;
+        return orElseThrows(RuntimeException::new);
     }
 
     public boolean isPresent() {

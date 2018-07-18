@@ -64,7 +64,7 @@ public abstract class OpenTweaker implements ITweaker {
             launchArgs.add(arg.getKey());
             launchArgs.add(arg.getValue());
         }
-        return launchArgs.toArray(new String[launchArgs.size()]);
+        return launchArgs.toArray(new String[0]);
     }
 
     public Side getSide() {

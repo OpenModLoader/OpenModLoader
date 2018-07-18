@@ -1,5 +1,6 @@
 package com.openmodloader.network;
 
+import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.OpenModLoader;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.Side;
@@ -80,13 +81,11 @@ public class NetworkManager {
     public static void sendToPlayers(IPacket packet, List<EntityPlayerServer> players) {
         SPacketCustomPayload packetPayload = new SPacketCustomPayload(CHANNEL, buildPacketData(packet));
         players.forEach(playerServer -> playerServer.networkHandler.a(packetPayload));
-
     }
 
     public static void sendToAll(IPacket packet) {
         MinecraftServer server = OpenModLoader.getSideHandler().getServer();
-        //TODO find all the players and the packet
-        throw new RuntimeException("Not working yet :)");
+        ArrayUtil.forEach(server.worlds, world -> world.players.stream().filter(EntityPlayerServer.class::isInstance).forEach(player -> sendToPlayer(packet, (EntityPlayerServer)player)));
     }
 
     public static <T, E> Optional<T> getKeysByValue(Map<T, E> map, E value) {
@@ -96,5 +95,4 @@ public class NetworkManager {
                 .map(Map.Entry::getKey)
                 .findFirst();
     }
-
 }
