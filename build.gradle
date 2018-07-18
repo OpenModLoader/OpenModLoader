@@ -30,10 +30,6 @@ apply plugin: 'maven-publish'
 
 sourceCompatibility = 1.8
 
-sourceSets {
-    veritas
-}
-
 minecraft {
     version = minecraft_version
     pomfVersion = "1"
