@@ -1,19 +1,13 @@
 package com.openmodloader.loader.launch;
 
-import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.ModInfo;
-import net.fabricmc.api.Side;
-import net.minecraft.launchwrapper.Launch;
+import me.modmuss50.fusion.MixinManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.spongepowered.asm.launch.MixinBootstrap;
-import org.spongepowered.asm.mixin.Mixins;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
 import java.util.*;
 import java.util.jar.JarFile;
 
@@ -22,15 +16,10 @@ public class MixinLoader {
     public static Map<String, ModInfo> mods = new HashMap<>();
     protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
 
-
-    public static void initMixins(Side side, File modsDir) throws IOException {
-
-        //TODO at this point read all of the pre applied mixins, and prevent them from being loaded
-
-        MixinBootstrap.init();
-
+	public static void initMixins(File modsDir) throws IOException {
         findMods(modsDir);
-        mods.values().forEach(modInfo -> ArrayUtil.forEach(modInfo.getMixins(), Mixins::addConfiguration));
+
+		mods.values().forEach(modInfo -> Arrays.stream(modInfo.getMixins()).forEach(MixinManager::registerMixin));
     }
 
     //This has to be done seperate from the main mod loading as it is on a different class path
@@ -38,28 +27,28 @@ public class MixinLoader {
         List<ModInfo> mods = new ArrayList<>();
         String javaHome = System.getProperty("java.home");
 
-        URL[] urls = Launch.classLoader.getURLs();
-        for (URL url : urls) {
-            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
-                continue;
-            }
-            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
-
-            File f = new File(url.getFile());
-            if (f.exists()) {
-                if (f.isDirectory()) {
-                    File modJson = new File(f, "mod.json");
-                    if (modJson.exists()) {
-                        try {
-                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
-                        } catch (FileNotFoundException e) {
-                            LOGGER.error("Unable to load mod from directory " + f.getPath());
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }
+	    //        URL[] urls = Launcher.INSTANCE.;
+	    //        for (URL url : urls) {
+	    //            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
+	    //                continue;
+	    //            }
+	    //            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
+	    //
+	    //            File f = new File(url.getFile());
+	    //            if (f.exists()) {
+	    //                if (f.isDirectory()) {
+	    //                    File modJson = new File(f, "mod.json");
+	    //                    if (modJson.exists()) {
+	    //                        try {
+	    //                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
+	    //                        } catch (FileNotFoundException e) {
+	    //                            LOGGER.error("Unable to load mod from directory " + f.getPath());
+	    //                            e.printStackTrace();
+	    //                        }
+	    //                    }
+	    //                }
+	    //            }
+	    //        }
         return mods;
     }
 

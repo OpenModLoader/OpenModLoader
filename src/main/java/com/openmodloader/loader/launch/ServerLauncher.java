@@ -1,6 +1,6 @@
 package com.openmodloader.loader.launch;
 
-import net.minecraft.launchwrapper.Launch;
+import cpw.mods.modlauncher.Launcher;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,12 +13,12 @@ public class ServerLauncher {
     public static void main(String[] args) {
         List<String> argList = new ArrayList<>();
         Collections.addAll(argList, args);
-        argList.add("--tweakClass");
-        argList.add("com.openmodloader.loader.launch.OpenServerTweaker");
+	    argList.add("--launchTarget");
+	    argList.add("oml");
 
         Object[] objectList = argList.toArray();
         String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-        Launch.main(stringArray);
+	    Launcher.main(stringArray);
     }
 
 }

@@ -6,14 +6,12 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import com.openmodloader.loader.OpenModLoader;
 import com.openmodloader.loader.server.ServerSideHandler;
+import me.modmuss50.fusion.api.Mixin;
+import me.modmuss50.fusion.api.Rewrite;
 import net.minecraft.command.CommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.UserCache;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -27,8 +25,8 @@ public abstract class MixinDedicatedServer extends MinecraftServer {
         super(aFile1, aProxy2, aDataFixer3, aCommandManager4, aYggdrasilAuthenticationService5, aMinecraftSessionService6, aGameProfileRepository7, aUserCache8);
     }
 
-    @Inject(method = "setupServer", at = @At("HEAD"))
-    public void setupServer(CallbackInfoReturnable<Boolean> info) throws IOException {
+	@Rewrite(target = "setupServer", behavior = Rewrite.Behavior.START)
+	public void setupServer_() throws IOException {
         OpenModLoader.initialize(this.getFile(""), new ServerSideHandler(this));
     }
 

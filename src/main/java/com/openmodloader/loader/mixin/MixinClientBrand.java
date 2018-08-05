@@ -1,8 +1,8 @@
 package com.openmodloader.loader.mixin;
 
+import me.modmuss50.fusion.api.Inject;
+import me.modmuss50.fusion.api.Mixin;
 import net.minecraft.client.ClientBrandRetriever;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(ClientBrandRetriever.class)
 public abstract class MixinClientBrand {
@@ -11,7 +11,7 @@ public abstract class MixinClientBrand {
      * @reason Change modification branding
      * @author Coded
      */
-    @Overwrite(remap = false)
+    @Inject
     public static String getClientModName() {
         return "OpenModLoader";
     }
