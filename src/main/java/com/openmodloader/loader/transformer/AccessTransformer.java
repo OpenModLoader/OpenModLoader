@@ -50,7 +50,7 @@ public class AccessTransformer implements ITransformer<ClassNode> {
 		"net.minecraft.client.render.TextureAtlasSprite",
 		"cuk",
 		"net.minecraft.render.debug.RenderDebugNeighborUpdate",
-		"net.minecraft.client.gui.GuiScreen"
+		"net.minecraft.client.gui.GuiScreen",
 	};
 
 	@Nonnull

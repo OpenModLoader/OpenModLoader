@@ -9,7 +9,7 @@ buildscript{
         }
     }
     dependencies{
-        classpath 'OpenGradle:OpenGradle:0.0.9-SNAPSHOT'
+        classpath 'OpenGradle:OpenGradle:0.0.10-SNAPSHOT'
     }
 }
 
@@ -17,7 +17,7 @@ apply plugin: OpenGradlePlugin
 group 'com.openmodloader.loader'
 
 def minecraft_version = "1.13"
-version minecraft_version + '-1.0.3'
+version minecraft_version + '-1.0.4'
 
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {
@@ -33,7 +33,6 @@ sourceCompatibility = 1.8
 minecraft {
     version = minecraft_version
     pomfVersion = "14"
-    refmapName = "mixins.openmodloader.refmap.json"
 }
 
 repositories {
@@ -61,9 +60,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile "com.github.zafarkhaja:java-semver:0.9.0"
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile ('net.minecraft:launchwrapper:1.12') {
-        transitive = false
-    }
     compile 'org.ow2.asm:asm-debug-all:5.2'
     compile 'com.typesafe:config:1.3.1'
     compile 'com.mojang:authlib:1.5.25'
@@ -71,6 +67,7 @@ dependencies {
     compile 'net.fabricmc:tiny-remapper:+'
     compile 'com.github.zafarkhaja:java-semver:0.9.0'
 	compile 'cpw.mods:modlauncher:0.1.0-rc.3'
+    compile 'me.modmuss50:Fusion:0.0.1.+'
 }
 
 publishing {
