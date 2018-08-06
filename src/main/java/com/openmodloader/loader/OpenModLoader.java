@@ -35,8 +35,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarFile;
 
@@ -218,30 +221,32 @@ public final class OpenModLoader {
         List<ModInfo> mods = new ArrayList<>();
         String javaHome = System.getProperty("java.home");
 
-	    //        URL[] urls = OpenModLoader.class.getProtectionDomain().getClassLoader().getURLs();
-	    //        for (URL url : urls) {
-	    //            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath()) || url.getPath().startsWith(librariesDir.getAbsolutePath())) {
-	    //                continue;
-	    //            }
-	    //            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
-	    //
-	    //            File f = new File(url.getFile());
-	    //            if (f.exists()) {
-	    //                if (f.isDirectory()) {
-	    //                    File modJson = new File(f, "mod.json");
-	    //                    if (modJson.exists()) {
-	    //                        try {
-	    //                            ModInfo[] infos = ModInfo.readFromFile(modJson);
-	    //                            ArrayUtil.forEach(infos, info -> info.setOrigin(f));
-	    //                            mods.addAll(Arrays.asList(infos));
-	    //                        } catch (FileNotFoundException e) {
-	    //                            LOGGER.error("Unable to load mod from directory " + f.getPath());
-	    //                            e.printStackTrace();
-	    //                        }
-	    //                    }
-	    //                }
-	    //            }
-	    //        }
+        ClassLoader loader = OpenModLoader.class.getClassLoader();
+        if (loader instanceof URLClassLoader) {
+            for (URL url : ((URLClassLoader) loader).getURLs()) {
+                if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath()) || url.getPath().startsWith(librariesDir.getAbsolutePath())) {
+                    continue;
+                }
+                LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
+
+                File f = new File(url.getFile());
+                if (f.exists()) {
+                    if (f.isDirectory()) {
+                        File modJson = new File(f, "mod.json");
+                        if (modJson.exists()) {
+                            try {
+                                ModInfo[] infos = ModInfo.readFromFile(modJson);
+                                ArrayUtil.forEach(infos, info -> info.setOrigin(f));
+                                mods.addAll(Arrays.asList(infos));
+                            } catch (FileNotFoundException e) {
+                                LOGGER.error("Unable to load mod from directory " + f.getPath());
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return mods;
     }
 

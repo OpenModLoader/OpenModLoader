@@ -7,7 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarFile;
 
@@ -27,28 +30,31 @@ public class MixinLoader {
         List<ModInfo> mods = new ArrayList<>();
         String javaHome = System.getProperty("java.home");
 
-	    //        URL[] urls = Launcher.INSTANCE.;
-	    //        for (URL url : urls) {
-	    //            if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
-	    //                continue;
-	    //            }
-	    //            LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
-	    //
-	    //            File f = new File(url.getFile());
-	    //            if (f.exists()) {
-	    //                if (f.isDirectory()) {
-	    //                    File modJson = new File(f, "mod.json");
-	    //                    if (modJson.exists()) {
-	    //                        try {
-	    //                            mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
-	    //                        } catch (FileNotFoundException e) {
-	    //                            LOGGER.error("Unable to load mod from directory " + f.getPath());
-	    //                            e.printStackTrace();
-	    //                        }
-	    //                    }
-	    //                }
-	    //            }
-	    //        }
+        ClassLoader loader = MixinLoader.class.getClassLoader();
+        if (loader instanceof URLClassLoader) {
+            URL[] urls = ((URLClassLoader) loader).getURLs();
+            for (URL url : urls) {
+                if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath())) {
+                    continue;
+                }
+                LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
+
+                File f = new File(url.getFile());
+                if (f.exists()) {
+                    if (f.isDirectory()) {
+                        File modJson = new File(f, "mod.json");
+                        if (modJson.exists()) {
+                            try {
+                                mods.addAll(Arrays.asList(ModInfo.readFromFile(modJson)));
+                            } catch (FileNotFoundException e) {
+                                LOGGER.error("Unable to load mod from directory " + f.getPath());
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return mods;
     }
 
