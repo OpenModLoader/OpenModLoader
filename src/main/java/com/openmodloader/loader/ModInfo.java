@@ -18,7 +18,6 @@ public class ModInfo {
     private int assetVersion = 4;
     private boolean library = false;
     private String languageAdapter = "com.openmodloader.loader.language.JavaLanguageAdapter";
-    private String[] mixins = new String[0];
     private String[] dependencies = new String[0];
     private String[] libraries = new String[0];
     private File origin;
@@ -89,10 +88,6 @@ public class ModInfo {
 
     public String getLanguageAdapter() {
         return languageAdapter;
-    }
-
-    public String[] getMixins() {
-        return mixins;
     }
 
     public String[] getDependencies() {
