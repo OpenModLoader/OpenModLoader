@@ -48,7 +48,6 @@ public class OMLServiceProvider implements ITransformationService {
 	public List<ITransformer> transformers() {
 		List<ITransformer> transformers = new ArrayList<>();
 		transformers.add(new MixinTransformer());
-		transformers.add(new AccessTransformer());
 		return transformers;
 	}
 }

@@ -16,46 +16,17 @@
 
 package com.openmodloader.loader.transformer;
 
-import cpw.mods.modlauncher.api.ITransformer;
-import cpw.mods.modlauncher.api.ITransformerVotingContext;
-import cpw.mods.modlauncher.api.TransformerVoteResult;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
-import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class AccessTransformer implements ITransformer<ClassNode> {
-
-	//TODO we need to write a tool to auto gen these for each POMF version
-	private String[] targets = new String[] {
-		"net.minecraft.util.math.shapes.ShapeUtils",
-		"cdz",
-		"cdw",
-		"net.minecraft.util.math.shapes.VoxelShapePart",
-		"net.minecraft.util.math.shapes.VoxelShape",
-		"net.minecraft.util.math.DoubleScale",
-		"cea",
-		"ced",
-		"cee",
-		"net.minecraft.client.particle.config.ParticleConfigDefault",
-		"dec",
-		"net.minecraft.NativeImage",
-		"net.minecraft.NativeImage$b",
-		"net.minecraft.client.texture.TextureUtil",
-		"net.minecraft.client.render.TextureAtlasSprite",
-		"cuk",
-		"net.minecraft.render.debug.RenderDebugNeighborUpdate",
-		"net.minecraft.client.gui.GuiScreen",
-	};
+public class AccessTransformer {
 
 	@Nonnull
-	@Override
-	public ClassNode transform(ClassNode classNode, ITransformerVotingContext context) {
+	public ClassNode transform(ClassNode classNode) {
 		boolean isClassPublic = (classNode.access & Opcodes.ACC_PUBLIC) != 0;
 		if (!isClassPublic) {
 			classNode.access &= ~Opcodes.ACC_PRIVATE;
@@ -82,15 +53,4 @@ public class AccessTransformer implements ITransformer<ClassNode> {
 		return classNode;
 	}
 
-	@Nonnull
-	@Override
-	public TransformerVoteResult castVote(ITransformerVotingContext context) {
-		return TransformerVoteResult.YES;
-	}
-
-	@Nonnull
-	@Override
-	public Set<Target> targets() {
-		return Arrays.stream(targets).map(Target::targetClass).collect(Collectors.toSet());
-	}
 }
