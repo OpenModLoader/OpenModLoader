@@ -11,9 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class OMLServiceProvider implements ITransformationService {
 
@@ -28,7 +26,9 @@ public class OMLServiceProvider implements ITransformationService {
 	@Override
 	public void initialize(IEnvironment environment) {
 		LOGGER.info("Hello Mod Launcher!");
-		MixinManager.findMixins(() -> Side.UNIVERSAL); //TODO find a good way to get the side
+		Map<String, String> data = new HashMap<>();
+		data.put("side", Side.UNIVERSAL.name()); //TODO find a good way to get the side
+		MixinManager.findMixins(data);
 	}
 
 	@Override
