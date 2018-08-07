@@ -25,7 +25,7 @@ public abstract class MixinDedicatedServer extends MinecraftServer {
         super(aFile1, aProxy2, aDataFixer3, aCommandManager4, aYggdrasilAuthenticationService5, aMinecraftSessionService6, aGameProfileRepository7, aUserCache8);
     }
 
-	@Rewrite(target = "setupServer", behavior = Rewrite.Behavior.START)
+	@Rewrite(target = "setupServer()Z", behavior = Rewrite.Behavior.START)
 	public void setupServer_() throws IOException {
         OpenModLoader.initialize(this.getFile(""), new ServerSideHandler(this));
     }
