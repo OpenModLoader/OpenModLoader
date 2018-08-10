@@ -14,7 +14,7 @@ buildscript{
 }
 
 apply plugin: OpenGradlePlugin
-group 'com.openmodloader.loader'
+group 'com.openmodloader'
 
 def minecraft_version = "1.13"
 version minecraft_version + '-1.0.4'
@@ -73,7 +73,7 @@ dependencies {
 publishing {
 	publications {
 		maven(MavenPublication) {
-			groupId 'OpenModLoader'
+			groupId project.group
 			artifactId project.archivesBaseName
 			version project.version
 
