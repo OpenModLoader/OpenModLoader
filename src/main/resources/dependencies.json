@@ -2,14 +2,14 @@
   "libraries": [
     {
       "name": "cpw.mods:modlauncher:0.1.0-rc.3",
-      "url": "http://files.minecraftforge.net/maven"
+      "url": "http://files.minecraftforge.net/maven/"
     },
     {
       "name": "org.ow2.asm:asm-all:5.0.3"
     },
     {
       "name": "com.github.zafarkhaja:java-semver:0.9.0",
-      "url": "http://repo.maven.apache.org/maven2"
+      "url": "http://repo.maven.apache.org/maven2/"
     }
   ]
 }
