@@ -4,3 +4,4 @@ http://central.maven.org/maven2/org/ow2/asm/asm-tree/6.2.1/asm-tree-6.2.1.jar
 http://central.maven.org/maven2/org/ow2/asm/asm-commons/6.2.1/asm-commons-6.2.1.jar
 http://central.maven.org/maven2/com/github/zafarkhaja/java-semver/0.9.0/java-semver-0.9.0.jar
 http://files.minecraftforge.net/maven/cpw/mods/modlauncher/0.1.0-rc.3/modlauncher-0.1.0-rc.3.jar
+http://central.maven.org/maven2/org/javassist/javassist/3.23.1-GA/javassist-3.23.1-GA.jar
