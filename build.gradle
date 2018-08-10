@@ -17,6 +17,7 @@ apply plugin: OpenGradlePlugin
 group 'com.openmodloader'
 
 def minecraft_version = "1.13"
+def pomf_version = "21"
 version minecraft_version + '-1.0.4'
 
 def ENV = System.getenv()
@@ -32,7 +33,7 @@ sourceCompatibility = 1.8
 
 minecraft {
     version = minecraft_version
-    pomfVersion = "21"
+    pomfVersion = pomf_version
 }
 
 repositories {
@@ -68,6 +69,18 @@ dependencies {
     compile 'com.github.zafarkhaja:java-semver:0.9.0'
 	compile 'cpw.mods:modlauncher:0.1.0-rc.3'
     compile 'me.modmuss50:Fusion:0.0.1.+'
+}
+
+jar {
+    manifest {
+        attributes(
+                'MinecraftVersion': minecraft_version,
+                'OMLVersion': project.version,
+                'PomfVersion': pomf_version,
+                'Main-Class': 'com.openmodloader.loader.launch.ServerLauncher',
+                'Class-Path': 'minecraft_server.' + minecraft_version + '.jar' + getClasspathEntrys()
+        )
+    }
 }
 
 publishing {
