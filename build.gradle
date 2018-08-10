@@ -77,8 +77,7 @@ jar {
                 'MinecraftVersion': minecraft_version,
                 'OMLVersion': project.version,
                 'PomfVersion': pomf_version,
-                'Main-Class': 'com.openmodloader.loader.launch.ServerLauncher',
-                'Class-Path': 'minecraft_server.' + minecraft_version + '.jar' + getClasspathEntrys()
+                'Main-Class': 'com.openmodloader.loader.launch.ServerLauncher'
         )
     }
 }
