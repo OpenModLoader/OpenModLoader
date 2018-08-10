@@ -52,10 +52,14 @@ public class OMLLaunchHandler implements ILaunchHandlerService {
 			scl.setAccessible(true);
 			scl.set(null, launchClassLoader.getInstance());
 			Thread.currentThread().setContextClassLoader(launchClassLoader.getInstance());
-			Class.forName("net.minecraft.client.main.Main", true, launchClassLoader.getInstance()).getMethod("main", String[].class).invoke(null, (Object) arguments);
+			Class.forName(getMainClass(), true, launchClassLoader.getInstance()).getMethod("main", String[].class).invoke(null, (Object) arguments);
 
 			return null;
 		};
+	}
+
+	public String getMainClass(){
+		return "net.minecraft.client.main.Main";
 	}
 
 }

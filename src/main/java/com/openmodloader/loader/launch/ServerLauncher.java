@@ -14,7 +14,7 @@ public class ServerLauncher {
         List<String> argList = new ArrayList<>();
         Collections.addAll(argList, args);
 	    argList.add("--launchTarget");
-	    argList.add("oml");
+	    argList.add("omlserver");
 
         Object[] objectList = argList.toArray();
         String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
