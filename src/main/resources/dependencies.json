@@ -5,7 +5,16 @@
       "url": "http://files.minecraftforge.net/maven/"
     },
     {
-      "name": "org.ow2.asm:asm-all:6.2"
+      "name": "org.ow2.asm:asm:6.2",
+      "url":"http://central.maven.org/maven2/"
+    },
+    {
+      "name": "org.ow2.asm:asm-tree:6.2",
+      "url":"http://central.maven.org/maven2/"
+    },
+    {
+      "name": "org.ow2.asm:asm-commons:6.2",
+      "url":"http://central.maven.org/maven2/"
     },
     {
       "name": "me.modmuss50:Fusion:0.0.1.+",
