@@ -5,7 +5,11 @@
       "url": "http://files.minecraftforge.net/maven/"
     },
     {
-      "name": "org.ow2.asm:asm-all:5.0.3"
+      "name": "org.ow2.asm:asm-all:6.2"
+    },
+    {
+      "name": "me.modmuss50:Fusion:0.0.1.+",
+      "url": "http://maven.modmuss50.me/"
     },
     {
       "name": "com.github.zafarkhaja:java-semver:0.9.0",
