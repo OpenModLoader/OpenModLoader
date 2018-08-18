@@ -224,12 +224,14 @@ public final class OpenModLoader {
             Enumeration<URL> urls = ClassLoader.getSystemResources("mod.json");
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                if(url.getProtocol().equals("jar")) {
-                    JarFile jar = new JarFile(new File(url.getFile()).getParentFile());
+                if (url.getProtocol().equals("jar")) {
+                    String path = url.getFile();
+                    String jarPath = path.substring(0, path.indexOf("!/"));
+                    JarFile jar = new JarFile(new File(jarPath));
                     ModInfo[] infos = ModInfo.readFromJar(jar);
-                    if(infos==null)
+                    if (infos == null)
                         continue;
-                    ArrayUtil.forEach(infos, info -> info.setOrigin(new File(url.getFile()).getParentFile()));
+                    ArrayUtil.forEach(infos, info -> info.setOrigin(new File(jarPath)));
                     mods.addAll(Arrays.asList(infos));
                 } else {
                     ModInfo[] infos = ModInfo.readFromFile(new File(url.getFile()));
