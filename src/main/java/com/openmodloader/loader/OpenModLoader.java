@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
 import java.util.jar.JarFile;
@@ -220,18 +221,27 @@ public final class OpenModLoader {
         String javaHome = System.getProperty("java.home");
 
 
+
+
         try {
             Enumeration<URL> urls = ClassLoader.getSystemResources("mod.json");
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
                 if (url.getProtocol().equals("jar")) {
                     String path = url.getFile();
-                    String jarPath = path.substring(0, path.indexOf("!/"));
-                    JarFile jar = new JarFile(new File(jarPath));
+                    URL jarPath = new URL(path.substring(0, path.indexOf("!/")));
+                    File file;
+                    try {
+                        file = new File(jarPath.toURI());
+                    } catch (URISyntaxException e) {
+                        file = new File(jarPath.getPath());
+                    }
+                    JarFile jar = new JarFile(file);
                     ModInfo[] infos = ModInfo.readFromJar(jar);
                     if (infos == null)
                         continue;
-                    ArrayUtil.forEach(infos, info -> info.setOrigin(new File(jarPath)));
+                    File finalFile = file;
+                    ArrayUtil.forEach(infos, info -> info.setOrigin(finalFile));
                     mods.addAll(Arrays.asList(infos));
                 } else {
                     ModInfo[] infos = ModInfo.readFromFile(new File(url.getFile()));
