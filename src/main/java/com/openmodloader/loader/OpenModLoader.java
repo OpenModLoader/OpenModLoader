@@ -19,6 +19,8 @@ import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.event.EventHandler;
 import com.openmodloader.loader.event.LoadEvent;
 import com.openmodloader.loader.exception.MissingModsException;
+import com.openmodloader.loader.json.SideTypeAdapter;
+import com.openmodloader.loader.json.VersionTypeAdapter;
 import com.openmodloader.network.test.TestPackets;
 import net.fabricmc.api.Side;
 import net.minecraft.block.Block;
@@ -49,21 +51,11 @@ import java.util.jar.JarFile;
 public final class OpenModLoader {
     public static final EventBus EVENT_BUS = new EventBus();
     public static final EventBus LOAD_BUS = new EventBus();
-    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Version.class, new TypeAdapter<Version>() {
-        @Override
-        public void write(JsonWriter out, Version value) throws IOException {
-            out.value(value.toString());
-        }
-
-        @Override
-        public Version read(JsonReader in) throws IOException {
-            if(in.peek()== JsonToken.NULL) {
-                in.nextNull();
-                return null;
-            }
-            return Version.valueOf(in.nextString());
-        }
-    }).setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder()
+            .registerTypeAdapter(Version.class, new VersionTypeAdapter())
+            .registerTypeAdapter(Side.class, new SideTypeAdapter())
+            .setPrettyPrinting()
+            .create();
 
     protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
     private static boolean initialized = false;

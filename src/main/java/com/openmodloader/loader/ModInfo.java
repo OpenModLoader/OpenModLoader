@@ -1,6 +1,7 @@
 package com.openmodloader.loader;
 
 import com.github.zafarkhaja.semver.Version;
+import net.fabricmc.api.Side;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -13,8 +14,8 @@ public class ModInfo {
     private String modid;
     private String name;
     private Version version;
-    private String mcversion;
-    private String side = "";
+    private Version mcversion;
+    private Side side = Side.UNIVERSAL;
     private String mainClass = "";
     private String icon = "";
     private int assetVersion = 4;
@@ -72,7 +73,7 @@ public class ModInfo {
         return icon.isEmpty() ? modid + ".png" : icon;
     }
 
-    public String getMinecraftVersion() {
+    public Version getMinecraftVersion() {
         return mcversion;
     }
 
@@ -80,7 +81,7 @@ public class ModInfo {
         return assetVersion;
     }
 
-    public String getSide() {
+    public Side getSide() {
         return side;
     }
 
