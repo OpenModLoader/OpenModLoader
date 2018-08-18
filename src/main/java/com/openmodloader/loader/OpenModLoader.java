@@ -31,6 +31,7 @@ import net.minecraft.sound.Sound;
 import net.minecraft.text.TextComponentString;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -42,6 +43,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 public final class OpenModLoader {
     public static final EventBus EVENT_BUS = new EventBus();
@@ -239,6 +241,19 @@ public final class OpenModLoader {
                                 ArrayUtil.forEach(infos, info -> info.setOrigin(f));
                                 mods.addAll(Arrays.asList(infos));
                             } catch (FileNotFoundException e) {
+                                LOGGER.error("Unable to load mod from directory " + f.getPath());
+                                e.printStackTrace();
+                            }
+                        }
+                    } else {
+                        if(FilenameUtils.isExtension(f.getName(),"jar")) {
+                            try {
+                                ModInfo[] infos = ModInfo.readFromJar(new JarFile(f));
+                                if(infos==null)
+                                    continue;
+                                ArrayUtil.forEach(infos, info -> info.setOrigin(f));
+                                mods.addAll(Arrays.asList(infos));
+                            } catch (IOException e) {
                                 LOGGER.error("Unable to load mod from directory " + f.getPath());
                                 e.printStackTrace();
                             }
