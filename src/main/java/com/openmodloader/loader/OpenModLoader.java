@@ -218,11 +218,6 @@ public final class OpenModLoader {
 
     private static List<ModInfo> locateClasspathMods() {
         List<ModInfo> mods = new ArrayList<>();
-        String javaHome = System.getProperty("java.home");
-
-
-
-
         try {
             Enumeration<URL> urls = ClassLoader.getSystemResources("mod.json");
             while (urls.hasMoreElements()) {
@@ -253,46 +248,6 @@ public final class OpenModLoader {
             e.printStackTrace();
         }
 
-        /*
-        ClassLoader loader = OpenModLoader.class.getClassLoader();
-        if (loader instanceof URLClassLoader) {
-            for (URL url : ((URLClassLoader) loader).getURLs()) {
-                if (url.getPath().startsWith(javaHome) || url.getPath().startsWith(modsDir.getAbsolutePath()) || url.getPath().startsWith(librariesDir.getAbsolutePath())) {
-                    continue;
-                }
-                LOGGER.debug("Attempting to find classpath mods from " + url.getPath());
-
-                File f = new File(url.getFile());
-                if (f.exists()) {
-                    if (f.isDirectory()) {
-                        File modJson = new File(f, "mod.json");
-                        if (modJson.exists()) {
-                            try {
-                                ModInfo[] infos = ModInfo.readFromFile(modJson);
-                                ArrayUtil.forEach(infos, info -> info.setOrigin(f));
-                                mods.addAll(Arrays.asList(infos));
-                            } catch (FileNotFoundException e) {
-                                LOGGER.error("Unable to load mod from directory " + f.getPath());
-                                e.printStackTrace();
-                            }
-                        }
-                    } else {
-                        if(FilenameUtils.isExtension(f.getName(),"jar")) {
-                            try {
-                                ModInfo[] infos = ModInfo.readFromJar(new JarFile(f));
-                                if(infos==null)
-                                    continue;
-                                ArrayUtil.forEach(infos, info -> info.setOrigin(f));
-                                mods.addAll(Arrays.asList(infos));
-                            } catch (IOException e) {
-                                LOGGER.error("Unable to load mod from directory " + f.getPath());
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
         return mods;
     }
 
