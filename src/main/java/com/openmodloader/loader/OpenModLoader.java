@@ -31,19 +31,15 @@ import net.minecraft.sound.Sound;
 import net.minecraft.text.TextComponentString;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.*;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 public final class OpenModLoader {
     public static final EventBus EVENT_BUS = new EventBus();
@@ -223,6 +219,29 @@ public final class OpenModLoader {
         List<ModInfo> mods = new ArrayList<>();
         String javaHome = System.getProperty("java.home");
 
+
+        try {
+            Enumeration<URL> urls = ClassLoader.getSystemResources("mod.json");
+            while (urls.hasMoreElements()) {
+                URL url = urls.nextElement();
+                if(url.getProtocol().equals("jar")) {
+                    JarFile jar = new JarFile(new File(url.getFile()).getParentFile());
+                    ModInfo[] infos = ModInfo.readFromJar(jar);
+                    if(infos==null)
+                        continue;
+                    ArrayUtil.forEach(infos, info -> info.setOrigin(new File(url.getFile()).getParentFile()));
+                    mods.addAll(Arrays.asList(infos));
+                } else {
+                    ModInfo[] infos = ModInfo.readFromFile(new File(url.getFile()));
+                    ArrayUtil.forEach(infos, info -> info.setOrigin(new File(url.getFile()).getParentFile()));
+                    mods.addAll(Arrays.asList(infos));
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*
         ClassLoader loader = OpenModLoader.class.getClassLoader();
         if (loader instanceof URLClassLoader) {
             for (URL url : ((URLClassLoader) loader).getURLs()) {
@@ -261,7 +280,7 @@ public final class OpenModLoader {
                     }
                 }
             }
-        }
+        }*/
         return mods;
     }
 
