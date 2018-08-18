@@ -10,10 +10,13 @@ import org.apache.logging.log4j.Logger;
 
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.stream.Stream;
 
 public class OMLLaunchHandler implements ILaunchHandlerService {
 
@@ -31,6 +34,19 @@ public class OMLLaunchHandler implements ILaunchHandlerService {
 
 	@Override
 	public Path[] identifyTransformationTargets() {
+
+		ClassLoader loader = OMLLaunchHandler.class.getClassLoader();
+		if(loader instanceof URLClassLoader) {
+			return Stream.of(((URLClassLoader) loader).getURLs()).map(url -> {
+				try {
+					return url.toURI();
+				} catch (URISyntaxException e) {
+					e.printStackTrace();
+				}
+				return null;
+			}).filter(Objects::nonNull).map(Paths::get).toArray(Path[]::new);
+		}
+
 		return Arrays.stream(transformTargets).map(aClass -> {
 			try {
 				return Paths.get(aClass.getProtectionDomain().getCodeSource().getLocation().toURI());
