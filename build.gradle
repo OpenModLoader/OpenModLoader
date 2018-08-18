@@ -93,6 +93,13 @@ String getClasspathEntrys(){
 	return classPath
 }
 
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+}
+
+build.dependsOn deobfJar
+
 publishing {
 	publications {
 		maven(MavenPublication) {
@@ -101,6 +108,7 @@ publishing {
 			version project.version
 
 			from components.java
+            artifact deobfJar
 		}
 	}
 	repositories {
