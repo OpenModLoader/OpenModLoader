@@ -5,6 +5,10 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
+import com.google.gson.stream.JsonWriter;
 import com.openmodloader.api.data.DataObject;
 import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.api.loader.SideHandler;
@@ -45,7 +49,22 @@ import java.util.jar.JarFile;
 public final class OpenModLoader {
     public static final EventBus EVENT_BUS = new EventBus();
     public static final EventBus LOAD_BUS = new EventBus();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Version.class, new TypeAdapter<Version>() {
+        @Override
+        public void write(JsonWriter out, Version value) throws IOException {
+            out.value(value.toString());
+        }
+
+        @Override
+        public Version read(JsonReader in) throws IOException {
+            if(in.peek()== JsonToken.NULL) {
+                in.nextNull();
+                return null;
+            }
+            return Version.valueOf(in.nextString());
+        }
+    }).setPrettyPrinting().create();
+
     protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
     private static boolean initialized = false;
     private static SideHandler sideHandler;

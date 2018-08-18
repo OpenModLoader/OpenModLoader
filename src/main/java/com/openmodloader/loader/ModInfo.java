@@ -12,7 +12,7 @@ public class ModInfo {
 
     private String modid;
     private String name;
-    private String version;
+    private Version version;
     private String mcversion;
     private String side = "";
     private String mainClass = "";
@@ -23,7 +23,6 @@ public class ModInfo {
     private String[] dependencies = new String[0];
     private String[] libraries = new String[0];
     private File origin;
-    private Version semver;
 
     public ModInfo(String modid) {
         this.modid = modid;
@@ -33,9 +32,7 @@ public class ModInfo {
     }
 
     public Version getVersion() {
-        if(semver==null)
-            semver=Version.valueOf(version);
-        return semver;
+        return version;
     }
 
     @Nullable
