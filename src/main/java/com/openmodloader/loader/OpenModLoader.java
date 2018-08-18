@@ -196,8 +196,7 @@ public final class OpenModLoader {
                         return;
                     }
                     if (split.length > 1) {
-                        Version dependVersion = Version.valueOf(dependInfo.getVersion());
-                        if (!dependVersion.satisfies(split[1])) {
+                        if (!dependInfo.getVersion().satisfies(split[1])) {
                             if (!wrongVersionMods.containsKey(info.getModId()))
                                 wrongVersionMods.put(info.getModId(), new ArrayList<>());
                             wrongVersionMods.get(info.getModId()).add(depend);
@@ -291,7 +290,7 @@ public final class OpenModLoader {
         return DataObject.of(MOD_INFO_MAP.get(modid));
     }
 
-    public static String getVersion() {
+    public static Version getVersion() {
         return getModInfo("openmodloader").map(ModInfo::getVersion).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
     }
 }

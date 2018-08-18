@@ -1,5 +1,7 @@
 package com.openmodloader.loader;
 
+import com.github.zafarkhaja.semver.Version;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
@@ -21,12 +23,19 @@ public class ModInfo {
     private String[] dependencies = new String[0];
     private String[] libraries = new String[0];
     private File origin;
+    private Version semver;
 
     public ModInfo(String modid) {
         this.modid = modid;
     }
 
     public ModInfo() {
+    }
+
+    public Version getVersion() {
+        if(semver==null)
+            semver=Version.valueOf(version);
+        return semver;
     }
 
     @Nullable
@@ -64,10 +73,6 @@ public class ModInfo {
 
     public String getIcon() {
         return icon.isEmpty() ? modid + ".png" : icon;
-    }
-
-    public String getVersion() {
-        return version;
     }
 
     public String getMinecraftVersion() {
