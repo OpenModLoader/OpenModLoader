@@ -131,16 +131,17 @@ public final class OpenModLoader {
         EVENT_BUS.register(handler);
         LOAD_BUS.register(handler);
         LOAD_BUS.post(new LoadEvent.Construction());
-        LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
-        LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
-        LOAD_BUS.post(new RegistryEvent<>(Fluid.REGISTRY, Fluid.class));
-        LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
-        LOAD_BUS.post(new RegistryEvent<>(Enchantment.REGISTRY, Enchantment.class));
-        LOAD_BUS.post(new RegistryEvent<>(Potion.REGISTRY, Potion.class));
-        LOAD_BUS.post(new RegistryEvent<>(Sound.REGISTRY, Sound.class));
-        Block.REGISTRY.forEach(block -> block.getStateContainer().getValidStates().stream().filter(
-                state -> Block.STATE_IDS.getId(state) == -1
-        ).forEach(Block.STATE_IDS::add));
+	    //TODO 1.13.1
+//        LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
+//        LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
+//        LOAD_BUS.post(new RegistryEvent<>(Fluid.REGISTRY, Fluid.class));
+//        LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
+//        LOAD_BUS.post(new RegistryEvent<>(Enchantment.REGISTRY, Enchantment.class));
+//        LOAD_BUS.post(new RegistryEvent<>(Potion.REGISTRY, Potion.class));
+//        LOAD_BUS.post(new RegistryEvent<>(Sound.REGISTRY, Sound.class));
+//        Block.REGISTRY.forEach(block -> block.getStateContainer().getValidStates().stream().filter(
+//                state -> Block.STATE_IDS.getId(state) == -1
+//        ).forEach(Block.STATE_IDS::add));
         TestPackets.load();
         LOAD_BUS.post(new LoadEvent.Finalization());
     }

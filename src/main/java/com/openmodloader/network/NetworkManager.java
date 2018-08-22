@@ -1,6 +1,5 @@
 package com.openmodloader.network;
 
-import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.OpenModLoader;
 import io.netty.buffer.Unpooled;
 import net.fabricmc.api.Side;
@@ -85,7 +84,7 @@ public class NetworkManager {
 
     public static void sendToAll(IPacket packet) {
         MinecraftServer server = OpenModLoader.getSideHandler().getServer();
-        ArrayUtil.forEach(server.worlds, world -> world.players.stream().filter(EntityPlayerServer.class::isInstance).forEach(player -> sendToPlayer(packet, (EntityPlayerServer)player)));
+	    server.w().forEach(world -> world.players.stream().filter(EntityPlayerServer.class::isInstance).forEach(player -> sendToPlayer(packet, (EntityPlayerServer)player)));
     }
 
     public static <T, E> Optional<T> getKeysByValue(Map<T, E> map, E value) {
