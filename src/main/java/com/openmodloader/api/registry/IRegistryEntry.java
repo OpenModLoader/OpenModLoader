@@ -1,6 +1,5 @@
 package com.openmodloader.api.registry;
 
-import com.openmodloader.api.data.DataObject;
 import net.minecraft.util.Identifier;
 
 public interface IRegistryEntry<V> {
@@ -12,8 +11,8 @@ public interface IRegistryEntry<V> {
         setRegistryName(new Identifier(domain, path));
     }
 
-    default DataObject<V> asDataObject() {
-        return DataObject.of((V) this);
+    default DataElementImpl<V> asDataObject() {
+        return DataElementImpl.of((V) this);
     }
 
     Identifier getRegistryName();

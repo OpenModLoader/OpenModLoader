@@ -11,18 +11,18 @@ import net.minecraft.util.PacketByteBuf;
 @Mixin(value = SPacketCustomPayload.class)
 public class SPacketCustomPayloadWrapper implements IPacketData {
 
-	private Identifier channel;
-	private PacketByteBuf data;
+    private Identifier channel;
+    private PacketByteBuf data;
 
-	@Inject
-	@Override
-	public Identifier getChannel() {
-		return channel;
-	}
+    @Inject
+    @Override
+    public Identifier getChannel() {
+        return channel;
+    }
 
-	@Inject
-	@Override
-	public PacketByteBuf getData() {
-		return data;
-	}
+    @Inject
+    @Override
+    public PacketByteBuf getData() {
+        return data;
+    }
 }

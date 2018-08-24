@@ -5,7 +5,7 @@ import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.core.event.EventBus;
 import com.openmodloader.core.event.EventContext;
 
-public abstract class AbstractManualEvent<E extends Event,RETURN> {
+public abstract class AbstractManualEvent<E extends Event, RETURN> {
     protected final E event;
     protected final EventBus bus;
     protected final EventContext context;

@@ -14,13 +14,13 @@ import java.io.IOException;
 @Mixin(Minecraft.class)
 public class MixinMinecraftClient {
 
-	@Rewrite(target = "<init>", behavior = Rewrite.Behavior.END)
-	public void init(RunArgs aRunArgs) throws IOException {
+    @Rewrite(target = "<init>", behavior = Rewrite.Behavior.END)
+    public void init(RunArgs aRunArgs) throws IOException {
         OpenModLoader.initialize(Minecraft.getInstance().runDirectory, new ClientSideHandler());
     }
 
-	@Rewrite(behavior = Rewrite.Behavior.END)
-	public void openGui(GuiScreen screen) {
+    @Rewrite(behavior = Rewrite.Behavior.END)
+    public void openGui(GuiScreen screen) {
         if (screen != null)
             OpenModLoader.EVENT_BUS.post(new GuiEvent.Open<>(screen));
     }

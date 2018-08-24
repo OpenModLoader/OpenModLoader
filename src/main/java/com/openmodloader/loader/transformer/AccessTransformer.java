@@ -25,32 +25,32 @@ import javax.annotation.Nonnull;
 
 public class AccessTransformer {
 
-	@Nonnull
-	public ClassNode transform(ClassNode classNode) {
-		boolean isClassPublic = (classNode.access & Opcodes.ACC_PUBLIC) != 0;
-		if (!isClassPublic) {
-			classNode.access &= ~Opcodes.ACC_PRIVATE;
-			classNode.access &= ~Opcodes.ACC_PROTECTED;
-			classNode.access |= Opcodes.ACC_PUBLIC;
-		}
+    @Nonnull
+    public ClassNode transform(ClassNode classNode) {
+        boolean isClassPublic = (classNode.access & Opcodes.ACC_PUBLIC) != 0;
+        if (!isClassPublic) {
+            classNode.access &= ~Opcodes.ACC_PRIVATE;
+            classNode.access &= ~Opcodes.ACC_PROTECTED;
+            classNode.access |= Opcodes.ACC_PUBLIC;
+        }
 
-		for (MethodNode method : classNode.methods) {
-			boolean isPublic = (method.access & Opcodes.ACC_PUBLIC) != 0;
-			if (!isPublic) {
-				method.access &= ~Opcodes.ACC_PRIVATE;
-				method.access &= ~Opcodes.ACC_PROTECTED;
-				method.access |= Opcodes.ACC_PUBLIC;
-			}
-		}
-		for (FieldNode field : classNode.fields) {
-			boolean isPublic = (field.access & Opcodes.ACC_PUBLIC) != 0;
-			if (!isPublic) {
-				field.access &= ~Opcodes.ACC_PRIVATE;
-				field.access &= ~Opcodes.ACC_PROTECTED;
-				field.access |= Opcodes.ACC_PUBLIC;
-			}
-		}
-		return classNode;
-	}
+        for (MethodNode method : classNode.methods) {
+            boolean isPublic = (method.access & Opcodes.ACC_PUBLIC) != 0;
+            if (!isPublic) {
+                method.access &= ~Opcodes.ACC_PRIVATE;
+                method.access &= ~Opcodes.ACC_PROTECTED;
+                method.access |= Opcodes.ACC_PUBLIC;
+            }
+        }
+        for (FieldNode field : classNode.fields) {
+            boolean isPublic = (field.access & Opcodes.ACC_PUBLIC) != 0;
+            if (!isPublic) {
+                field.access &= ~Opcodes.ACC_PRIVATE;
+                field.access &= ~Opcodes.ACC_PROTECTED;
+                field.access |= Opcodes.ACC_PUBLIC;
+            }
+        }
+        return classNode;
+    }
 
 }

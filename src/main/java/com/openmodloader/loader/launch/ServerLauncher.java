@@ -13,12 +13,12 @@ public class ServerLauncher {
     public static void main(String[] args) {
         List<String> argList = new ArrayList<>();
         Collections.addAll(argList, args);
-	    argList.add("--launchTarget");
-	    argList.add("omlserver");
+        argList.add("--launchTarget");
+        argList.add("omlserver");
 
         Object[] objectList = argList.toArray();
         String[] stringArray = Arrays.copyOf(objectList, objectList.length, String[].class);
-	    Launcher.main(stringArray);
+        Launcher.main(stringArray);
     }
 
 }

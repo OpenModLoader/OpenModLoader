@@ -4,10 +4,9 @@ import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.core.event.EventBus;
 import com.openmodloader.core.event.EventContext;
-import com.openmodloader.loader.ModInfo;
 import com.openmodloader.loader.OpenModLoader;
 
-public class ManualEvent<E extends Event> extends AbstractManualEvent<E,E> {
+public class ManualEvent<E extends Event> extends AbstractManualEvent<E, E> {
     public ManualEvent(E event, EventBus bus, EventContext context) {
         super(event, bus, context);
     }

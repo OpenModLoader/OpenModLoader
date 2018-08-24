@@ -12,10 +12,10 @@ import net.minecraft.command.CommandSender;
 @Mixin(CommandManager.class)
 public abstract class MixinCommandManager {
 
-	private CommandDispatcher<CommandSender> commandDispatcher;
+    private CommandDispatcher<CommandSender> commandDispatcher;
 
-	@Rewrite(target = "<init>", behavior = Rewrite.Behavior.END)
-	public void constructor(boolean dediServer) {
+    @Rewrite(target = "<init>", behavior = Rewrite.Behavior.END)
+    public void constructor(boolean dediServer) {
         OpenModLoader.LOAD_BUS.post(new RegisterCommandsEvent(commandDispatcher));
     }
 

@@ -19,9 +19,9 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class ModFolderPack extends PhysicalResourcePack {
-    private final ModInfo modInfo;
+    private final Mod modInfo;
 
-    public ModFolderPack(File aFile1, ModInfo modInfo) {
+    public ModFolderPack(File aFile1, Mod modInfo) {
         super(aFile1);
         this.modInfo = modInfo;
     }

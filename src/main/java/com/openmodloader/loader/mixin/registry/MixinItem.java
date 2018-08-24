@@ -10,18 +10,18 @@ import net.minecraft.util.Identifier;
 public class MixinItem implements IRegistryEntry<Item> {
     private Identifier registryName;
 
-	@Inject
-	@Override
-	public Identifier getRegistryName() {
-		return registryName;
-	}
+    @Inject
+    @Override
+    public Identifier getRegistryName() {
+        return registryName;
+    }
 
-	@Inject
-	@Override
-	public void setRegistryName(Identifier identifier) {
-		if (this.registryName != null) {
-			//Already named
-		}
-		this.registryName = identifier;
-	}
+    @Inject
+    @Override
+    public void setRegistryName(Identifier identifier) {
+        if (this.registryName != null) {
+            //Already named
+        }
+        this.registryName = identifier;
+    }
 }

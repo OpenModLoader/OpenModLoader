@@ -2,10 +2,10 @@ package com.openmodloader.core.event;
 
 import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
+import com.openmodloader.api.event.Subscribe;
 import com.openmodloader.core.event.manual.CancellableManualEvent;
 import com.openmodloader.core.event.manual.ManualEvent;
 import com.openmodloader.core.event.manual.ResultManualEvent;
-import com.openmodloader.loader.ModInfo;
 import com.openmodloader.loader.OpenModLoader;
 import net.minecraft.util.Pair;
 
@@ -26,11 +26,11 @@ public class EventBus {
 
     public void register(Object target) {
         for (Method method : target.getClass().getDeclaredMethods()) {
-            if (!method.isAnnotationPresent(Event.Subscribe.class))
+            if (!method.isAnnotationPresent(Subscribe.class))
                 continue;
             if (method.getParameterTypes().length == 0)
                 throw new RuntimeException("Attempted to use an @Event.Subscribe with no event");
-            Event.Subscribe subscribe = method.getAnnotation(Event.Subscribe.class);
+            Subscribe subscribe = method.getAnnotation(Subscribe.class);
             Class<? extends Event> eventClass = (Class<? extends Event>) method.getParameterTypes()[0];
             Class<?> returnType = method.getReturnType();
             if (subscribe.phase() == EventPhase.CANCELLATION) {
@@ -117,7 +117,7 @@ public class EventBus {
             Pair<String, Object> modContext = pair.getFirst();
             OpenModLoader.getModInfo(modContext.getFirst()).ifPresent(OpenModLoader::setActiveMod);
             Method method = pair.getSecond();
-            Event.Subscribe subscribe = method.getAnnotation(Event.Subscribe.class);
+            Subscribe subscribe = method.getAnnotation(Subscribe.class);
             if (subscribe.phase() != context.phase)
                 continue;
             boolean validMethod = true;

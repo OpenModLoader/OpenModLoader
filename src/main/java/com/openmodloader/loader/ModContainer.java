@@ -1,19 +1,13 @@
 package com.openmodloader.loader;
 
-public class ModContainer {
-    private final ModInfo info;
-    private final Object modInstance;
+import com.openmodloader.api.DataObject;
 
-    public ModContainer(ModInfo info, Object modInstance) {
-        this.info = info;
-        this.modInstance = modInstance;
-    }
+import java.nio.file.Path;
 
-    public ModInfo getInfo() {
-        return info;
-    }
+public interface ModContainer {
 
-    public Object getModInstance() {
-        return modInstance;
-    }
+    Path getPath();
+
+    DataObject getMetadata();
+
 }

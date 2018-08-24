@@ -1,9 +1,5 @@
 package com.openmodloader.api.event;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.lang.reflect.Type;
 
 public interface Event {
@@ -22,11 +18,5 @@ public interface Event {
 
     interface WithResult<T> extends Event {
         T getDefaultResult();
-    }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    @interface Subscribe {
-        EventPhase phase() default EventPhase.DEFAULT;
     }
 }

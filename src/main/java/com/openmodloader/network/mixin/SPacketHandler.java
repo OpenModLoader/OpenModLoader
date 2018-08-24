@@ -12,9 +12,9 @@ import net.minecraft.util.PacketByteBuf;
 @Mixin(value = NetworkGameHandlerServer.class)
 public abstract class SPacketHandler {
 
-	@Rewrite(behavior = Rewrite.Behavior.END)
-	public void onCustomPayload(SPacketCustomPayload packet) {
-	    IPacketData packetData = (IPacketData) packet;
+    @Rewrite(behavior = Rewrite.Behavior.END)
+    public void onCustomPayload(SPacketCustomPayload packet) {
+        IPacketData packetData = (IPacketData) packet;
         if (packetData.getChannel().equals(NetworkManager.CHANNEL)) {
             PacketByteBuf buf = packetData.getData();
             NetworkManager.handleIncomingPacket(buf, Side.SERVER);

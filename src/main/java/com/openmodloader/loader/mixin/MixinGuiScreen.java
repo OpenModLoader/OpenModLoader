@@ -9,8 +9,8 @@ import net.minecraft.client.gui.GuiScreen;
 @Mixin(GuiScreen.class)
 public abstract class MixinGuiScreen {
 
-	@Rewrite(behavior = Rewrite.Behavior.END)
-	public void draw(int aInteger1, int aInteger2, float aFloat3) {
-		OpenModLoader.EVENT_BUS.post(new GuiEvent.Draw<>((GuiScreen) (Object) this));
-	}
+    @Rewrite(behavior = Rewrite.Behavior.END)
+    public void draw(int aInteger1, int aInteger2, float aFloat3) {
+        OpenModLoader.EVENT_BUS.post(new GuiEvent.Draw<>((GuiScreen) (Object) this));
+    }
 }

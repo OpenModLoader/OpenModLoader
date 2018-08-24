@@ -17,49 +17,49 @@ import java.util.concurrent.Callable;
 
 public class OMLLaunchHandler implements ILaunchHandlerService {
 
-	protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoaderLauncher");
+    protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoaderLauncher");
 
-	private Class[] transformTargets = new Class[]{
-			OMLLaunchHandler.class,
-			Main.class
-	};
+    private Class[] transformTargets = new Class[]{
+            OMLLaunchHandler.class,
+            Main.class
+    };
 
-	@Override
-	public String name() {
-		return "oml";
-	}
+    @Override
+    public String name() {
+        return "oml";
+    }
 
-	@Override
-	public Path[] identifyTransformationTargets() {
-		return Arrays.stream(transformTargets).map(aClass -> {
-			try {
-				return Paths.get(aClass.getProtectionDomain().getCodeSource().getLocation().toURI());
-			} catch (URISyntaxException e) {
-				throw new RuntimeException(e);
-			}
-		}).toArray(Path[]::new);
-	}
+    @Override
+    public Path[] identifyTransformationTargets() {
+        return Arrays.stream(transformTargets).map(aClass -> {
+            try {
+                return Paths.get(aClass.getProtectionDomain().getCodeSource().getLocation().toURI());
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+        }).toArray(Path[]::new);
+    }
 
-	@Override
-	public Callable<Void> launchService(String[] arguments, ITransformingClassLoader launchClassLoader) {
-		return () -> {
-			LOGGER.info("Starting modded minecraft with oml");
+    @Override
+    public Callable<Void> launchService(String[] arguments, ITransformingClassLoader launchClassLoader) {
+        return () -> {
+            LOGGER.info("Starting modded minecraft with oml");
 
-			MixinTransformer.cp.appendClassPath(new LoaderClassPath(launchClassLoader.getInstance()));
+            MixinTransformer.cp.appendClassPath(new LoaderClassPath(launchClassLoader.getInstance()));
 
-			//Taken from forge, moves the MC main class onto the correct class loader
-			Field scl = ClassLoader.class.getDeclaredField("scl");
-			scl.setAccessible(true);
-			scl.set(null, launchClassLoader.getInstance());
-			Thread.currentThread().setContextClassLoader(launchClassLoader.getInstance());
-			Class.forName(getMainClass(), true, launchClassLoader.getInstance()).getMethod("main", String[].class).invoke(null, (Object) arguments);
+            //Taken from forge, moves the MC main class onto the correct class loader
+            Field scl = ClassLoader.class.getDeclaredField("scl");
+            scl.setAccessible(true);
+            scl.set(null, launchClassLoader.getInstance());
+            Thread.currentThread().setContextClassLoader(launchClassLoader.getInstance());
+            Class.forName(getMainClass(), true, launchClassLoader.getInstance()).getMethod("main", String[].class).invoke(null, (Object) arguments);
 
-			return null;
-		};
-	}
+            return null;
+        };
+    }
 
-	public String getMainClass() {
-		return "net.minecraft.client.main.Main";
-	}
+    public String getMainClass() {
+        return "net.minecraft.client.main.Main";
+    }
 
 }

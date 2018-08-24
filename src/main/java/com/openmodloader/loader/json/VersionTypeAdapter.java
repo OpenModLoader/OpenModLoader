@@ -16,7 +16,7 @@ public class VersionTypeAdapter extends TypeAdapter<Version> {
 
     @Override
     public Version read(JsonReader in) throws IOException {
-        if(in.peek()== JsonToken.NULL) {
+        if (in.peek() == JsonToken.NULL) {
             in.nextNull();
             return null;
         }

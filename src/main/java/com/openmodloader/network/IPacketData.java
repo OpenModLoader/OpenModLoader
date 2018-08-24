@@ -4,7 +4,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
 public interface IPacketData {
-	Identifier getChannel();
+    Identifier getChannel();
 
-	PacketByteBuf getData();
+    PacketByteBuf getData();
 }

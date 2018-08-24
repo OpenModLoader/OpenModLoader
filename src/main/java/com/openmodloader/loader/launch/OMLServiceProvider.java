@@ -15,32 +15,32 @@ import java.util.*;
 
 public class OMLServiceProvider implements ITransformationService {
 
-	protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
+    protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
 
-	@Nonnull
-	@Override
-	public String name() {
-		return "oml";
-	}
+    @Nonnull
+    @Override
+    public String name() {
+        return "oml";
+    }
 
-	@Override
-	public void initialize(IEnvironment environment) {
-		LOGGER.info("Hello Mod Launcher!");
-		Map<String, String> data = new HashMap<>();
-		data.put("side", Side.UNIVERSAL.name()); //TODO find a good way to get the side
-		MixinManager.findMixins(data);
-	}
+    @Override
+    public void initialize(IEnvironment environment) {
+        LOGGER.info("Hello Mod Launcher!");
+        Map<String, String> data = new HashMap<>();
+        data.put("side", Side.UNIVERSAL.name()); //TODO find a good way to get the side
+        MixinManager.findMixins(data);
+    }
 
-	@Override
-	public void onLoad(IEnvironment env, Set<String> otherServices) throws IncompatibleEnvironmentException {
+    @Override
+    public void onLoad(IEnvironment env, Set<String> otherServices) throws IncompatibleEnvironmentException {
 
-	}
+    }
 
-	@Nonnull
-	@Override
-	public List<ITransformer> transformers() {
-		List<ITransformer> transformers = new ArrayList<>();
-		transformers.add(new MixinTransformer());
-		return transformers;
-	}
+    @Nonnull
+    @Override
+    public List<ITransformer> transformers() {
+        List<ITransformer> transformers = new ArrayList<>();
+        transformers.add(new MixinTransformer());
+        return transformers;
+    }
 }
