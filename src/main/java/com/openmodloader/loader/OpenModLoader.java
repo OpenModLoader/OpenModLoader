@@ -29,6 +29,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
+import net.minecraft.registry.IRegistry;
 import net.minecraft.resource.IPackFinder;
 import net.minecraft.resource.PackMetadata;
 import net.minecraft.resource.ResourcePackInfo;
@@ -46,6 +47,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.jar.JarFile;
 
 public final class OpenModLoader {
@@ -131,17 +133,17 @@ public final class OpenModLoader {
         EVENT_BUS.register(handler);
         LOAD_BUS.register(handler);
         LOAD_BUS.post(new LoadEvent.Construction());
-	    //TODO 1.13.1
-//        LOAD_BUS.post(new RegistryEvent<>(Item.REGISTRY, Item.class));
-//        LOAD_BUS.post(new RegistryEvent<>(Block.REGISTRY, Block.class));
-//        LOAD_BUS.post(new RegistryEvent<>(Fluid.REGISTRY, Fluid.class));
-//        LOAD_BUS.post(new RegistryEvent<>(Biome.REGISTRY, Biome.class));
-//        LOAD_BUS.post(new RegistryEvent<>(Enchantment.REGISTRY, Enchantment.class));
-//        LOAD_BUS.post(new RegistryEvent<>(Potion.REGISTRY, Potion.class));
-//        LOAD_BUS.post(new RegistryEvent<>(Sound.REGISTRY, Sound.class));
-//        Block.REGISTRY.forEach(block -> block.getStateContainer().getValidStates().stream().filter(
-//                state -> Block.STATE_IDS.getId(state) == -1
-//        ).forEach(Block.STATE_IDS::add));
+
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.ITEMS, Item.class));
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.BLOCKS, Block.class));
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.FLUIDS, Fluid.class));
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.BIOMES, Biome.class));
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.ENCHANTMENTS, Enchantment.class));
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.POTIONS, Potion.class));
+        LOAD_BUS.post(new RegistryEvent<>(IRegistry.SOUNDS, Sound.class));
+        IRegistry.BLOCKS.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(
+                state -> Block.STATE_IDS.getId(state) == -1
+        ).forEach(Block.STATE_IDS::add));
         TestPackets.load();
         LOAD_BUS.post(new LoadEvent.Finalization());
     }
