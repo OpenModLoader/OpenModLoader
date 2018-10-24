@@ -35,7 +35,8 @@ public class RegistryEvent<T> implements Event.Generic, Event.PhaseLimit {
     }
 
     public void register(Identifier identifier, T value) {
-        registry.add(identifier, value);
+        //TODO 1.14
+        //registry.add(identifier.toString(), value);
     }
 
     public void registerAll(Map<Identifier, T> map) {

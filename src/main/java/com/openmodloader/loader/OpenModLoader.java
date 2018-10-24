@@ -141,9 +141,10 @@ public final class OpenModLoader {
         LOAD_BUS.post(new RegistryEvent<>(IRegistry.ENCHANTMENTS, Enchantment.class));
         LOAD_BUS.post(new RegistryEvent<>(IRegistry.POTIONS, Potion.class));
         LOAD_BUS.post(new RegistryEvent<>(IRegistry.SOUNDS, Sound.class));
-        IRegistry.BLOCKS.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(
-                state -> Block.STATE_IDS.getId(state) == -1
-        ).forEach(Block.STATE_IDS::add));
+        //TODO 1.14
+//        IRegistry.BLOCKS.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(
+//                state -> Block.STATE_IDS.getId(state) == -1
+//        ).forEach(Block.STATE_IDS::add));
         TestPackets.load();
         LOAD_BUS.post(new LoadEvent.Finalization());
     }
