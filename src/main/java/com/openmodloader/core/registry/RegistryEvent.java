@@ -3,17 +3,17 @@ package com.openmodloader.core.registry;
 import com.openmodloader.api.event.Event;
 import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.loader.OpenModLoader;
-import net.minecraft.registry.IRegistry;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 
 public class RegistryEvent<T> implements Event.Generic, Event.PhaseLimit {
-    private final IRegistry<T> registry;
+    private final Registry<T> registry;
     private final Class<T> type;
 
-    public RegistryEvent(IRegistry<T> registry, Class<T> type) {
+    public RegistryEvent(Registry<T> registry, Class<T> type) {
         this.registry = registry;
         this.type = type;
     }

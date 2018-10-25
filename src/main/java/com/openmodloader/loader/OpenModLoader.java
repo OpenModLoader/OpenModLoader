@@ -5,10 +5,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
-import com.google.gson.stream.JsonWriter;
 import com.openmodloader.api.data.DataObject;
 import com.openmodloader.api.event.EventPhase;
 import com.openmodloader.api.loader.SideHandler;
@@ -29,7 +25,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.potion.Potion;
-import net.minecraft.registry.IRegistry;
+import net.minecraft.registry.Registry;
 import net.minecraft.resource.IPackFinder;
 import net.minecraft.resource.PackMetadata;
 import net.minecraft.resource.ResourcePackInfo;
@@ -46,8 +42,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.jar.JarFile;
 
 public final class OpenModLoader {
@@ -134,13 +135,13 @@ public final class OpenModLoader {
         LOAD_BUS.register(handler);
         LOAD_BUS.post(new LoadEvent.Construction());
 
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.ITEMS, Item.class));
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.BLOCKS, Block.class));
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.FLUIDS, Fluid.class));
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.BIOMES, Biome.class));
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.ENCHANTMENTS, Enchantment.class));
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.POTIONS, Potion.class));
-        LOAD_BUS.post(new RegistryEvent<>(IRegistry.SOUNDS, Sound.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.ITEMS, Item.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.BLOCKS, Block.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.FLUIDS, Fluid.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.BIOMES, Biome.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.ENCHANTMENTS, Enchantment.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.POTIONS, Potion.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.SOUNDS, Sound.class));
         //TODO 1.14
 //        IRegistry.BLOCKS.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(
 //                state -> Block.STATE_IDS.getId(state) == -1

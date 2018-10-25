@@ -16,8 +16,8 @@ buildscript{
 apply plugin: OpenGradlePlugin
 group 'com.openmodloader'
 
-def minecraft_version = "18w43a"
-def pomf_version = "6"
+def minecraft_version = "18w43b"
+def pomf_version = "3"
 version minecraft_version + '-1.0.8'
 
 def ENV = System.getenv()
@@ -51,10 +51,10 @@ repositories {
         name = 'Modmuss'
         url = 'http://maven.modmuss50.me/'
     }
-	maven {
-		name = 'Forge' //For ModLauncher
-		url = 'http://files.minecraftforge.net/maven/'
-	}
+	  maven {
+		    name = 'Forge' //For ModLauncher
+		    url = 'http://files.minecraftforge.net/maven/'
+	  }
 }
 
 dependencies {
@@ -65,7 +65,7 @@ dependencies {
     compile 'com.mojang:authlib:1.5.25'
     compile 'net.sf.jopt-simple:jopt-simple:5.0.4'
     compile 'net.fabricmc:tiny-remapper:+'
-	compile 'cpw.mods:modlauncher:0.1.0'
+  	compile 'cpw.mods:modlauncher:0.1.0'
     compile 'me.modmuss50:Fusion:0.0.1.+'
 }
 
