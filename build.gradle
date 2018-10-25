@@ -17,7 +17,7 @@ apply plugin: OpenGradlePlugin
 group 'com.openmodloader'
 
 def minecraft_version = "18w43b"
-def pomf_version = "3"
+def pomf_version = "5"
 version minecraft_version + '-1.0.8'
 
 def ENV = System.getenv()
