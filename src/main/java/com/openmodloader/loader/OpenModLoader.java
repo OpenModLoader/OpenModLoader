@@ -32,6 +32,7 @@ import net.minecraft.resource.ResourcePackInfo;
 import net.minecraft.resource.pack.PhysicalResourcePack;
 import net.minecraft.sound.Sound;
 import net.minecraft.text.TextComponentString;
+import net.minecraft.world.IWorldReadable;
 import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
