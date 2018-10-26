@@ -1,5 +1,6 @@
 package com.openmodloader.loader.mixin;
 
+import com.openmodloader.core.event.GuiEvent;
 import com.openmodloader.loader.OpenModLoader;
 import com.openmodloader.loader.client.ClientOMLContext;
 import me.modmuss50.fusion.api.Mixin;
@@ -22,8 +23,7 @@ public class MixinMinecraftClient {
 	@Rewrite(behavior = Rewrite.Behavior.END)
 	public void openGui(GuiScreen screen) {
         if (screen != null) {
-            // TODO
-//            OpenModLoader.EVENT_BUS.post(new GuiEvent.Open<>(screen));
+            OpenModLoader.get().getEventDispatcher().dispatch(new GuiEvent.Open<>(screen));
         }
     }
 }

@@ -17,9 +17,10 @@ public class GenericEventTarget<E extends IEvent, G> implements IEventTarget<E> 
     }
 
     private int computeHash() {
-        return this.eventClass.hashCode() + this.genericType.hashCode() * 31;
+        return this.eventClass.hashCode();
     }
 
+    // TODO: This is quite a magic system... Ideally we'd want to do it differently while still maintaining performance
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
@@ -27,7 +28,7 @@ public class GenericEventTarget<E extends IEvent, G> implements IEventTarget<E> 
 
         if (obj.getClass() == this.getClass() || obj instanceof GenericEventTarget) {
             GenericEventTarget<?, ?> target = (GenericEventTarget<?, ?>) obj;
-            return target.eventClass.equals(this.eventClass) && target.genericType.equals(this.genericType);
+            return target.eventClass.equals(this.eventClass) && target.genericType.isAssignableFrom(this.genericType);
         }
 
         return false;
