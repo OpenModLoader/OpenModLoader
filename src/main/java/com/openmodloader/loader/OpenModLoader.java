@@ -9,11 +9,11 @@ import com.openmodloader.TestMod;
 import com.openmodloader.api.data.DataObject;
 import com.openmodloader.api.event.TargetedListener;
 import com.openmodloader.api.loader.SideHandler;
-import com.openmodloader.api.loader.language.ILanguageAdapter;
-import com.openmodloader.api.mod.config.IEventConfig;
-import com.openmodloader.api.mod.config.IModConfig;
-import com.openmodloader.core.event.EventDispatcher;
-import com.openmodloader.core.event.PretendGuiEvent;
+import com.openmodloader.api.mod.IMod;
+import com.openmodloader.api.mod.IModData;
+import com.openmodloader.api.mod.ModCache;
+import com.openmodloader.core.event.EventBus;
+import com.openmodloader.core.registry.RegistryEvent;
 import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.exception.MissingModsException;
 import com.openmodloader.loader.json.SideTypeAdapter;
@@ -27,23 +27,16 @@ import net.minecraft.resource.PackMetadata;
 import net.minecraft.resource.ResourcePackInfo;
 import net.minecraft.resource.pack.PhysicalResourcePack;
 import net.minecraft.text.TextComponentString;
+import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
@@ -61,10 +54,9 @@ public final class OpenModLoader {
     private static File configDir;
     private static File modsDir;
     private static File librariesDir;
-    private static Map<String, ModInfo> MOD_INFO_MAP = new HashMap<>();
-    private static Map<String, ModContainer> MOD_CONTAINER_MAP = new HashMap<>();
-    private static Map<String, ILanguageAdapter> LANGUAGE_ADAPTERS = new HashMap<>();
-    private static ModInfo activeMod;
+    private static EventPhase currentPhase;
+    private static Map<String, ModCache> MOD_MAP = new HashMap<>();
+    private static IModData activeMod;
 
     private OpenModLoader() {
     }
@@ -73,20 +65,25 @@ public final class OpenModLoader {
         return getSideHandler().getSide();
     }
 
-    public static ModInfo getActiveMod() {
+    public static void setCurrentPhase(EventPhase currentPhase) {
+        OpenModLoader.currentPhase = currentPhase;
+    }
+
+    public static IModData getActiveMod() {
         return activeMod;
     }
 
-    public static void setActiveMod(ModInfo info) {
-        activeMod = info;
+    public static void setActiveMod(IModData mod) {
+        ModCache cache = MOD_MAP.get(mod.getModId());
+        activeMod = cache == null ? activeMod : cache.getData();
     }
 
     public static Set<String> getActiveModIds() {
-        return ImmutableSet.copyOf(MOD_INFO_MAP.keySet());
+        return ImmutableSet.copyOf(MOD_MAP.keySet());
     }
 
-    public static Set<ModInfo> getActiveMods() {
-        return ImmutableSet.copyOf(MOD_INFO_MAP.values());
+    public static Set<ModCache> getActiveMods() {
+        return ImmutableSet.copyOf(MOD_MAP.values());
     }
 
     public static Gson getGson() {
@@ -113,7 +110,6 @@ public final class OpenModLoader {
             librariesDir.mkdirs();
         }
         loadMods();
-        loadLibraries();
         scanDependencies();
         finalLoad();
         initialized = true;
@@ -132,7 +128,13 @@ public final class OpenModLoader {
 //        LOAD_BUS.post(new RegistryEvent<>(Registry.POTIONS, Potion.class));
 //        LOAD_BUS.post(new RegistryEvent<>(Registry.SOUNDS, Sound.class));
 
-        //TODO 1.14
+        LOAD_BUS.post(new RegistryEvent<>(Registry.ITEMS, Item.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.BLOCKS, Block.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.FLUIDS, Fluid.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.BIOMES, Biome.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.ENCHANTMENTS, Enchantment.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.POTIONS, Potion.class));
+        LOAD_BUS.post(new RegistryEvent<>(Registry.SOUNDS, Sound.class));
 //        IRegistry.BLOCKS.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(
 //                state -> Block.STATE_IDS.getId(state) == -1
 //        ).forEach(Block.STATE_IDS::add));
@@ -158,10 +160,13 @@ public final class OpenModLoader {
     }
 
     private static void finalLoad() {
-        getActiveMods().forEach(OpenModLoader::loadMod);
+        getActiveMods().forEach(mod -> {
+            LOAD_BUS.register(mod.getMod());
+        });
+        //getActiveMods().forEach(OpenModLoader::loadMod);
         Map<ModInfo, PhysicalResourcePack> resourcePacks = new HashMap<>();
-        getActiveMods().forEach(info -> {
-            if (info.getModId().equals("minecraft")) {
+        /*getActiveMods().forEach(info -> {
+            if (info.getData().getModId().equals("minecraft"))
                 return;
             }
             File origin = info.getOrigin();
@@ -170,7 +175,7 @@ public final class OpenModLoader {
             } else {
                 resourcePacks.put(info, new ModFilePack(origin, info));
             }
-        });
+        });*/
         if (getSideHandler().getSide() == Side.CLIENT) {
             Minecraft.getInstance().getResourcePacks().addPackFinder(new IPackFinder() {
                 @Override
@@ -189,31 +194,14 @@ public final class OpenModLoader {
         }
     }
 
-    private static void loadLibraries() {
-        for (ModInfo info : getActiveMods()) {
-            ModInfo[] infos = downloadLibraries(info);
-            ArrayUtil.forEach(infos, libInfo -> {
-                addInfo(libInfo);
-                downloadLibraries(libInfo);
-            });
-        }
-    }
-
-    public static ModInfo[] downloadLibraries(ModInfo info) {
-        if (info.getLibraries().length == 0) {
-            return new ModInfo[0];
-        }
-        //TODO: Scan and download libraries
-        return new ModInfo[0];
-    }
-
     private static void scanDependencies() {
         Map<String, List<String>> missingMods = new HashMap<>();
         Map<String, List<String>> wrongVersionMods = new HashMap<>();
-        for (ModInfo info : getActiveMods()) {
+        for (ModCache mod : getActiveMods()) {
+            IModData info = mod.getData();
             for (String depend : info.getDependencies()) {
                 String[] split = depend.split("@");
-                getModInfo(split[0]).ifPresent(dependInfo -> {
+                getModData(split[0]).ifPresent(dependInfo -> {
                     if (dependInfo == null) {
                         if (!missingMods.containsKey(info.getModId())) {
                             missingMods.put(info.getModId(), new ArrayList<>());
@@ -234,8 +222,7 @@ public final class OpenModLoader {
             List<String> missing = missingMods.get(info.getModId());
             List<String> wrongVersion = wrongVersionMods.get(info.getModId());
             if ((missing != null && !missing.isEmpty()) || (wrongVersion != null && !wrongVersion.isEmpty())) {
-                MOD_INFO_MAP.remove(info.getModId());
-                MOD_CONTAINER_MAP.remove(info.getModId());
+                MOD_MAP.remove(info.getModId());
             }
         }
         if (!missingMods.isEmpty() || !wrongVersionMods.isEmpty()) {
@@ -279,52 +266,38 @@ public final class OpenModLoader {
         return mods;
     }
 
-    private static void loadMod(ModInfo info) {
-        if (!info.getMainClass().isEmpty()) {
-            try {
-                if (!LANGUAGE_ADAPTERS.containsKey(info.getLanguageAdapter())) {
-                    LANGUAGE_ADAPTERS.put(info.getLanguageAdapter(), (ILanguageAdapter) Class.forName(info.getLanguageAdapter()).getConstructor().newInstance());
-                }
-                ModContainer container = new ModContainer(info, LANGUAGE_ADAPTERS.get(info.getLanguageAdapter()).createModInstance(Class.forName(info.getMainClass())));
-                MOD_CONTAINER_MAP.put(info.getModId(), container);
-                setActiveMod(info);
-
-                // TODO
-//                LOAD_BUS.register(container.getModInstance());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     private static void loadMods() throws IOException {
-        testLoadMod();
-        locateClasspathMods().forEach(OpenModLoader::addInfo);
-        for (File file : FileUtils.listFiles(modsDir, new String[] { "jar" }, true)) {
-            JarFile jar = new JarFile(file);
-            ModInfo[] infos = ModInfo.readFromJar(jar);
-            if (infos == null) {
-                continue;
-            }
-            ArrayUtil.forEach(infos, info -> info.setOrigin(file));
-            ArrayUtil.forEach(infos, OpenModLoader::addInfo);
-        }
-        getModInfo("openmodloader").ifPresent(OpenModLoader::setActiveMod).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
-    }
 
-    private static void addInfo(ModInfo info) {
-        MOD_INFO_MAP.put(info.getModId(), info);
+        ServiceLoader<IMod> modServiceLoader = ServiceLoader.load(IMod.class);
+
+        List<ModCache> mods = new ArrayList<>();
+
+        mods.add(new ModCache(new InjectedMod("openmodloader", Version.valueOf("1.0.0"))));
+        mods.add(new ModCache(new InjectedMod("minecraft", Version.valueOf("1.14.0+18w43b"))));
+
+        for (File file : FileUtils.listFiles(modsDir, new String[]{"jar"}, true)) {
+            ModClassLoader loader = new ModClassLoader(new URL[]{file.toURI().toURL()});
+            ServiceLoader<IMod> jarServiceLoader = ServiceLoader.load(IMod.class, loader);
+            jarServiceLoader.forEach(mod -> mods.add(new ModCache(mod)));
+        }
+
+        modServiceLoader.forEach(mod -> mods.add(new ModCache(mod)));
+
+        mods.forEach(mod -> MOD_MAP.put(mod.getData().getModId(), mod));
+
+        //locateClasspathMods().forEach(OpenModLoader::addInfo);
+        getModData("openmodloader").ifPresent(OpenModLoader::setActiveMod).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
     }
 
     public static SideHandler getSideHandler() {
         return sideHandler;
     }
 
-    public static DataObject<ModInfo> getModInfo(String modid) {
-        return DataObject.of(MOD_INFO_MAP.get(modid));
+    public static DataObject<IModData> getModData(String modid) {
+        return DataObject.of(MOD_MAP.get(modid)).map(ModCache::getData);
     }
 
     public static Version getVersion() {
-        return getModInfo("openmodloader").map(ModInfo::getVersion).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
+        return getModData("openmodloader").map(IModData::getVersion).orElseThrows(() -> new RuntimeException("Missing OML mod mapping, this should never happen!"));
     }
 }

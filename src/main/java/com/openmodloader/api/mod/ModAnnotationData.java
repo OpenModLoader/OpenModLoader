@@ -1,10 +1,17 @@
 package com.openmodloader.api.mod;
 
-public class ModAnnotationData implements IModData {
-    private Mod annotation;
+import com.github.zafarkhaja.semver.Version;
 
-    private ModAnnotationData(Mod annotation) {
-        this.annotation = annotation;
+public class ModAnnotationData implements IModData {
+    private final String modid;
+    private final Version version;
+    private final String[] deps;
+
+    public ModAnnotationData(Class<?> mClass) {
+        Mod annotation= mClass.getAnnotation(Mod.class);
+        modid=annotation.id();
+        version=Version.valueOf(annotation.version());
+        deps=annotation.dependencies();
     }
 
     public static ModAnnotationData of(Class<?> modClass) {
@@ -17,16 +24,16 @@ public class ModAnnotationData implements IModData {
 
     @Override
     public String getModId() {
-        return annotation.id();
+        return modid;
     }
 
     @Override
-    public String getModVersion() {
-        return annotation.version();
+    public Version getVersion() {
+        return version;
     }
 
     @Override
-    public String getDependencies() {
-        return annotation.dependencies();
+    public String[] getDependencies() {
+        return deps;
     }
 }

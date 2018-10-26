@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface Mod {
     String id();
     String version();
-    String dependencies() default "";
+    String[] dependencies() default {};
 }
