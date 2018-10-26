@@ -16,7 +16,6 @@ import com.openmodloader.api.mod.config.IEventConfig;
 import com.openmodloader.api.mod.config.IModConfig;
 import com.openmodloader.core.event.EventDispatcher;
 import com.openmodloader.core.event.PretendGuiEvent;
-import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.exception.MissingModsException;
 import com.openmodloader.loader.json.SideTypeAdapter;
 import com.openmodloader.loader.json.VersionTypeAdapter;
@@ -35,10 +34,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
-import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public final class OpenModLoader {
@@ -150,7 +147,7 @@ public final class OpenModLoader {
 
     private static void finalLoad() {
         //getActiveMods().forEach(OpenModLoader::loadMod);
-        Map<ModInfo, PhysicalResourcePack> resourcePacks = new HashMap<>();
+        Map<ModCache, PhysicalResourcePack> resourcePacks = new HashMap<>();
         /*getActiveMods().forEach(info -> {
             if (info.getData().getModId().equals("minecraft"))
                 return;
@@ -171,7 +168,7 @@ public final class OpenModLoader {
                         try {
                             metadata = pack.getPackMetadata(PackMetadata.DESERIALISER);
                         } catch (IOException e) {
-                            metadata = new PackMetadata(new TextComponentString(pack.getName() + " Resources"), info.getAssetVersion());
+                            metadata = new PackMetadata(new TextComponentString(pack.getName() + " Resources"), 3);
                         }
                         map.put(Preconditions.checkNotNull(pack.getName(), "Mod Resources Name"), iFactory.create(pack.getName(), true, () -> pack, pack, metadata, ResourcePackInfo.Priority.BOTTOM));
                     });
@@ -214,42 +211,6 @@ public final class OpenModLoader {
         if (!missingMods.isEmpty() || !wrongVersionMods.isEmpty()) {
             throw new MissingModsException(missingMods, wrongVersionMods);
         }
-    }
-
-    private static List<ModInfo> locateClasspathMods() {
-        List<ModInfo> mods = new ArrayList<>();
-        try {
-            Enumeration<URL> urls = ClassLoader.getSystemResources("mod.json");
-            while (urls.hasMoreElements()) {
-                URL url = urls.nextElement();
-                if (url.getProtocol().equals("jar")) {
-                    String path = url.getFile();
-                    URL jarPath = new URL(path.substring(0, path.indexOf("!/")));
-                    File file;
-                    try {
-                        file = new File(jarPath.toURI());
-                    } catch (URISyntaxException e) {
-                        file = new File(jarPath.getPath());
-                    }
-                    JarFile jar = new JarFile(file);
-                    ModInfo[] infos = ModInfo.readFromJar(jar);
-                    if (infos == null) {
-                        continue;
-                    }
-                    File finalFile = file;
-                    ArrayUtil.forEach(infos, info -> info.setOrigin(finalFile));
-                    mods.addAll(Arrays.asList(infos));
-                } else {
-                    ModInfo[] infos = ModInfo.readFromFile(new File(url.getFile()));
-                    ArrayUtil.forEach(infos, info -> info.setOrigin(new File(url.getFile()).getParentFile()));
-                    mods.addAll(Arrays.asList(infos));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return mods;
     }
 
     private static void loadMods() throws IOException {
