@@ -12,6 +12,6 @@ public abstract class MixinGuiScreen {
     @Rewrite(behavior = Rewrite.Behavior.END)
     public void draw(int mouseX, int mouseY, float aFloat3) {
         GuiScreen screen = (GuiScreen) (Object) this;
-        OpenModLoader.eventDispatcher.dispatch(new GuiRenderEvent<>(screen));
+        OpenModLoader.get().getEventDispatcher().dispatch(new GuiRenderEvent<>(screen));
     }
 }

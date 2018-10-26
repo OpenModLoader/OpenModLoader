@@ -1,6 +1,6 @@
 package com.openmodloader.api.event;
 
 @FunctionalInterface
-public interface EventListener<E extends IEvent> {
+public interface IEventListener<E extends IEvent> {
     void handle(E event, EventContext context);
 }

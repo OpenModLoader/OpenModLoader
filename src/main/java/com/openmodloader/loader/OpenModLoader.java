@@ -1,9 +1,10 @@
 package com.openmodloader.loader;
 
-import com.openmodloader.api.event.TargetedListener;
+import com.openmodloader.api.event.EventMap;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.Mod;
 import com.openmodloader.api.mod.ModMetadata;
+import com.openmodloader.api.mod.config.IEventConfig;
 import com.openmodloader.api.mod.config.IModConfig;
 import com.openmodloader.api.mod.config.IModConfigurator;
 import com.openmodloader.core.event.EventDispatcher;
@@ -17,9 +18,6 @@ import java.util.stream.Collectors;
 public final class OpenModLoader {
     protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
 
-    // TODO: Temporary
-    public static EventDispatcher eventDispatcher;
-
     private static OpenModLoader instance;
 
     private final OMLContext context;
@@ -28,6 +26,8 @@ public final class OpenModLoader {
     private final File configDir;
     private final File modsDir;
     private final File librariesDir;
+
+    private EventDispatcher eventDispatcher;
 
     private OpenModLoader(OMLContext context) {
         this.context = context;
@@ -69,6 +69,14 @@ public final class OpenModLoader {
         return context;
     }
 
+    // TODO: Should we have a separate object that's initialized only once mods are loaded?
+    public EventDispatcher getEventDispatcher() {
+        if (eventDispatcher == null) {
+            throw new IllegalStateException("Event dispatcher not yet initialized");
+        }
+        return eventDispatcher;
+    }
+
     public void loadMods() {
         ModReportCollector reportCollector = new ModReportCollector();
 
@@ -81,13 +89,15 @@ public final class OpenModLoader {
                 .map(this::constructMod)
                 .collect(Collectors.toList());
 
-        // TODO: Temporary
-        Collection<TargetedListener<?>> listeners = mods.stream()
-                .flatMap(m -> m.getConfig().getEventConfigs().stream())
-                .flatMap(c -> c.collectListeners().stream())
-                .collect(Collectors.toList());
+        EventMap.Builder eventBuilder = EventMap.builder();
+        for (Mod mod : mods) {
+            Collection<IEventConfig> eventConfigs = mod.getConfig().getEventConfigs();
+            for (IEventConfig config : eventConfigs) {
+                config.applyTo(eventBuilder);
+            }
+        }
 
-        eventDispatcher = EventDispatcher.from(listeners);
+        eventDispatcher = new EventDispatcher(eventBuilder.build());
 
         /*ServiceLoader<IModConfigurator> modServiceLoader = ServiceLoader.load(IModConfigurator.class);
 

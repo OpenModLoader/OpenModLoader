@@ -1,9 +1,7 @@
 package com.openmodloader.api.mod.config;
 
-import com.openmodloader.api.event.TargetedListener;
-
-import java.util.Collection;
+import com.openmodloader.api.event.EventMap;
 
 public interface IEventConfig {
-    Collection<TargetedListener<?>> collectListeners();
+    void applyTo(EventMap.Builder builder);
 }
