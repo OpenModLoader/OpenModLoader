@@ -12,8 +12,10 @@ import com.openmodloader.api.loader.SideHandler;
 import com.openmodloader.api.mod.IMod;
 import com.openmodloader.api.mod.IModData;
 import com.openmodloader.api.mod.ModCache;
-import com.openmodloader.core.event.EventBus;
-import com.openmodloader.core.registry.RegistryEvent;
+import com.openmodloader.api.mod.config.IEventConfig;
+import com.openmodloader.api.mod.config.IModConfig;
+import com.openmodloader.core.event.EventDispatcher;
+import com.openmodloader.core.event.PretendGuiEvent;
 import com.openmodloader.core.util.ArrayUtil;
 import com.openmodloader.loader.exception.MissingModsException;
 import com.openmodloader.loader.json.SideTypeAdapter;
@@ -27,7 +29,6 @@ import net.minecraft.resource.PackMetadata;
 import net.minecraft.resource.ResourcePackInfo;
 import net.minecraft.resource.pack.PhysicalResourcePack;
 import net.minecraft.text.TextComponentString;
-import net.minecraft.world.biome.Biome;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,7 +55,6 @@ public final class OpenModLoader {
     private static File configDir;
     private static File modsDir;
     private static File librariesDir;
-    private static EventPhase currentPhase;
     private static Map<String, ModCache> MOD_MAP = new HashMap<>();
     private static IModData activeMod;
 
@@ -63,10 +63,6 @@ public final class OpenModLoader {
 
     public static Side getCurrentSide() {
         return getSideHandler().getSide();
-    }
-
-    public static void setCurrentPhase(EventPhase currentPhase) {
-        OpenModLoader.currentPhase = currentPhase;
     }
 
     public static IModData getActiveMod() {
@@ -128,13 +124,6 @@ public final class OpenModLoader {
 //        LOAD_BUS.post(new RegistryEvent<>(Registry.POTIONS, Potion.class));
 //        LOAD_BUS.post(new RegistryEvent<>(Registry.SOUNDS, Sound.class));
 
-        LOAD_BUS.post(new RegistryEvent<>(Registry.ITEMS, Item.class));
-        LOAD_BUS.post(new RegistryEvent<>(Registry.BLOCKS, Block.class));
-        LOAD_BUS.post(new RegistryEvent<>(Registry.FLUIDS, Fluid.class));
-        LOAD_BUS.post(new RegistryEvent<>(Registry.BIOMES, Biome.class));
-        LOAD_BUS.post(new RegistryEvent<>(Registry.ENCHANTMENTS, Enchantment.class));
-        LOAD_BUS.post(new RegistryEvent<>(Registry.POTIONS, Potion.class));
-        LOAD_BUS.post(new RegistryEvent<>(Registry.SOUNDS, Sound.class));
 //        IRegistry.BLOCKS.stream().forEach(block -> block.getStateContainer().getValidStates().stream().filter(
 //                state -> Block.STATE_IDS.getId(state) == -1
 //        ).forEach(Block.STATE_IDS::add));
@@ -160,9 +149,6 @@ public final class OpenModLoader {
     }
 
     private static void finalLoad() {
-        getActiveMods().forEach(mod -> {
-            LOAD_BUS.register(mod.getMod());
-        });
         //getActiveMods().forEach(OpenModLoader::loadMod);
         Map<ModInfo, PhysicalResourcePack> resourcePacks = new HashMap<>();
         /*getActiveMods().forEach(info -> {

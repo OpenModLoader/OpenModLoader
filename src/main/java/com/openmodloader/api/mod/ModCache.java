@@ -9,7 +9,7 @@ public class ModCache {
 
     public ModCache(IMod mod) {
         this.mod = mod;
-        this.data = mod.buildData();
+        this.data = mod.getData();
     }
 
     public IMod getMod() {

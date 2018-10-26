@@ -15,11 +15,10 @@ public class ModAnnotationData implements IModData {
     }
 
     public static ModAnnotationData of(Class<?> modClass) {
-        Mod annotation = modClass.getAnnotation(Mod.class);
-        if (annotation == null) {
-            throw new IllegalArgumentException("Mod present not present on " + modClass);
+        if (modClass.isAnnotationPresent(Mod.class)) {
+            throw new IllegalArgumentException("Mod not present on " + modClass);
         }
-        return new ModAnnotationData(annotation);
+        return new ModAnnotationData(modClass);
     }
 
     @Override
