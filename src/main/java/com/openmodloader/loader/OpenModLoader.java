@@ -1,27 +1,33 @@
 package com.openmodloader.loader;
 
+import com.openmodloader.api.event.TargetedListener;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.Mod;
 import com.openmodloader.api.mod.ModMetadata;
 import com.openmodloader.api.mod.config.IModConfig;
 import com.openmodloader.api.mod.config.IModConfigurator;
+import com.openmodloader.core.event.EventDispatcher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 public final class OpenModLoader {
     protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
+
+    // TODO: Temporary
+    public static EventDispatcher eventDispatcher;
 
     private static OpenModLoader instance;
 
     private final OMLContext context;
 
-    private File gameDir;
-    private File configDir;
-    private File modsDir;
-    private File librariesDir;
+    private final File gameDir;
+    private final File configDir;
+    private final File modsDir;
+    private final File librariesDir;
 
     private OpenModLoader(OMLContext context) {
         this.context = context;
@@ -71,16 +77,17 @@ public final class OpenModLoader {
             reporter.apply(reportCollector);
         }
 
-        Collection<ModReportCollector.Report> reports = reportCollector.getReports();
-        for (ModReportCollector.Report report : reports) {
-            ModMetadata metadata = report.getMetadata();
-            IModConfigurator configurator = report.getConfigurator();
+        Collection<Mod> mods = reportCollector.getReports().stream()
+                .map(this::constructMod)
+                .collect(Collectors.toList());
 
-            IModConfig config = configurator.initConfig();
-            configurator.configure(config);
+        // TODO: Temporary
+        Collection<TargetedListener<?>> listeners = mods.stream()
+                .flatMap(m -> m.getConfig().getEventConfigs().stream())
+                .flatMap(c -> c.collectListeners().stream())
+                .collect(Collectors.toList());
 
-            Mod mod = new Mod(metadata, config);
-        }
+        eventDispatcher = EventDispatcher.from(listeners);
 
         /*ServiceLoader<IModConfigurator> modServiceLoader = ServiceLoader.load(IModConfigurator.class);
 
@@ -98,5 +105,15 @@ public final class OpenModLoader {
         modServiceLoader.forEach(mod -> mods.add(new Mod(metadata, mod)));
 
         mods.forEach(mod -> modMap.put(mod.getData().getModId(), mod));*/
+    }
+
+    private Mod constructMod(ModReportCollector.Report report) {
+        ModMetadata metadata = report.getMetadata();
+        IModConfigurator configurator = report.getConfigurator();
+
+        IModConfig config = configurator.initConfig();
+        configurator.configure(config);
+
+        return new Mod(metadata, config);
     }
 }
