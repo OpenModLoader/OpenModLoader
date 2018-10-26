@@ -1,6 +1,6 @@
 package com.openmodloader.loader.launch;
 
-import net.minecraft.client.main.Main;
+import net.minecraft.server.MinecraftServer;
 
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -11,7 +11,7 @@ public class OMLClientLaunchHandler extends OMLLaunchHandler {
 
 	private Class[] transformTargets = new Class[]{
 			OMLLaunchHandler.class,
-			Main.class
+			MinecraftServer.class
 	};
 
 	@Override

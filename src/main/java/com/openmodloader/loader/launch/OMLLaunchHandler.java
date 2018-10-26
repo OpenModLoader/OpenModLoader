@@ -5,6 +5,7 @@ import cpw.mods.modlauncher.api.ITransformingClassLoader;
 import javassist.LoaderClassPath;
 import me.modmuss50.fusion.transformer.MixinTransformer;
 import net.minecraft.client.main.Main;
+import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -20,7 +21,8 @@ public class OMLLaunchHandler implements ILaunchHandlerService {
 	protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoaderLauncher");
 
 	private Class[] transformTargets = new Class[]{
-			OMLLaunchHandler.class
+			OMLLaunchHandler.class,
+			MinecraftServer.class
 	};
 
 	@Override
