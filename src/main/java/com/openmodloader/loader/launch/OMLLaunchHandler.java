@@ -20,8 +20,7 @@ public class OMLLaunchHandler implements ILaunchHandlerService {
 	protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoaderLauncher");
 
 	private Class[] transformTargets = new Class[]{
-			OMLLaunchHandler.class,
-			Main.class
+			OMLLaunchHandler.class
 	};
 
 	@Override

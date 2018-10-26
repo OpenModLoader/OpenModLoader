@@ -1,2 +1,3 @@
+com.openmodloader.loader.launch.OMLClientLaunchHandler
 com.openmodloader.loader.launch.OMLLaunchHandler
 com.openmodloader.loader.launch.OMLServerLaunchHandler
