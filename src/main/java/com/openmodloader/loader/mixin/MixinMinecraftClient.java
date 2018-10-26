@@ -2,7 +2,6 @@ package com.openmodloader.loader.mixin;
 
 import com.openmodloader.loader.OpenModLoader;
 import com.openmodloader.loader.client.ClientSideHandler;
-import com.openmodloader.loader.event.GuiEvent;
 import me.modmuss50.fusion.api.Mixin;
 import me.modmuss50.fusion.api.Rewrite;
 import net.minecraft.client.Minecraft;
@@ -21,7 +20,9 @@ public class MixinMinecraftClient {
 
 	@Rewrite(behavior = Rewrite.Behavior.END)
 	public void openGui(GuiScreen screen) {
-        if (screen != null)
-            OpenModLoader.EVENT_BUS.post(new GuiEvent.Open<>(screen));
+        if (screen != null) {
+            // TODO
+//            OpenModLoader.EVENT_BUS.post(new GuiEvent.Open<>(screen));
+        }
     }
 }
