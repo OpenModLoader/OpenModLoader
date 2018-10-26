@@ -1,14 +1,34 @@
 package com.openmodloader.api.mod;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.openmodloader.api.mod.config.IModConfig;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Mod {
-    String id();
-    String version();
-    String[] dependencies() default {};
+public class Mod {
+    private final ModMetadata metadata;
+    private final IModConfig config;
+
+    public Mod(ModMetadata metadata, IModConfig config) {
+        this.metadata = metadata;
+        this.config = config;
+    }
+
+    public ModMetadata getMetadata() {
+        return metadata;
+    }
+
+    public IModConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != getClass()) return false;
+
+        return ((Mod) obj).metadata.equals(metadata);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.metadata.hashCode();
+    }
 }

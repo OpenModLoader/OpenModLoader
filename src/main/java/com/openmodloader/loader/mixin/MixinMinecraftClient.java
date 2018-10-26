@@ -1,7 +1,7 @@
 package com.openmodloader.loader.mixin;
 
 import com.openmodloader.loader.OpenModLoader;
-import com.openmodloader.loader.client.ClientSideHandler;
+import com.openmodloader.loader.client.ClientOMLContext;
 import me.modmuss50.fusion.api.Mixin;
 import me.modmuss50.fusion.api.Rewrite;
 import net.minecraft.client.Minecraft;
@@ -15,7 +15,8 @@ public class MixinMinecraftClient {
 
 	@Rewrite(target = "<init>", behavior = Rewrite.Behavior.END)
 	public void init(RunArgs aRunArgs) throws IOException {
-        OpenModLoader.initialize(Minecraft.getInstance().runDirectory, new ClientSideHandler());
+	    OpenModLoader oml = OpenModLoader.initialize(new ClientOMLContext());
+	    oml.loadMods();
     }
 
 	@Rewrite(behavior = Rewrite.Behavior.END)
