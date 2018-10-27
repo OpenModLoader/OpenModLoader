@@ -30,7 +30,6 @@ public abstract class MixinDedicatedServer extends MinecraftServer {
 	@Rewrite(target = "setupServer()Z", behavior = Rewrite.Behavior.START)
 	public void setupServer_() throws IOException {
         OpenModLoader.initialize(this.getFile(""), new ServerSideHandler(this));
-        LightEngine
     }
 
 
