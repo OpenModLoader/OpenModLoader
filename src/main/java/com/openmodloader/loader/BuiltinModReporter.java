@@ -4,14 +4,10 @@ import com.github.zafarkhaja.semver.Version;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.ModMetadata;
 import com.openmodloader.api.mod.config.SimpleEventConfig;
-import com.openmodloader.api.mod.config.SimpleRegistrationConfig;
 import com.openmodloader.api.mod.config.VoidModConfigurator;
 import com.openmodloader.core.event.GuiEvent;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.menu.GuiMainMenu;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.render.text.TextRenderer;
 
 public class BuiltinModReporter implements IModReporter {
     @Override
@@ -20,18 +16,15 @@ public class BuiltinModReporter implements IModReporter {
         collector.report(new ModMetadata("openmodloader", Version.valueOf("1.0.0")), config -> {
             // TODO: Should be extracted out into another class
             config.addEventConfig(SimpleEventConfig.builder()
-                    .listen(GuiEvent.Open.target(GuiScreen.class), (event, context) -> {
-                        GuiScreen gui = event.getGui();
-                        System.out.println("opened screen " + gui);
-                    })
                     .listen(GuiEvent.Draw.target(GuiMainMenu.class), (event, context) -> {
                         GuiMainMenu gui = event.getGui();
-                        System.out.println("draw screen " + gui);
+                        TextRenderer textRenderer = event.getTextRenderer();
+
+                        // TODO: Properly retrieve version
+                        int mods = OpenModLoader.get().getModList().size();
+                        textRenderer.renderText(String.format("%d %s Loaded", mods, mods == 1 ? "Mod" : "Mods"), 2, gui.height - 20, -1);
+                        textRenderer.renderText(String.format("Loader Version %s", "1.0.0"), 2, gui.height - 30, -1);
                     })
-                    .build()
-            );
-            config.addRegistrationConfig(SimpleRegistrationConfig.builder()
-                    .withEntry(Registry.ITEMS, new Identifier("openmodloader", "test"), identifier -> new Item(new Item.Builder()))
                     .build()
             );
         });

@@ -50,6 +50,10 @@ public final class OpenModLoader {
         return eventDispatcher;
     }
 
+    public ModList getModList() {
+        return modList;
+    }
+
     public void initialize() {
         offerInstance(this);
 

@@ -4,6 +4,7 @@ import com.openmodloader.api.event.GenericEventTarget;
 import com.openmodloader.api.event.IEvent;
 import com.openmodloader.api.event.IEventTarget;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.render.text.TextRenderer;
 
 public abstract class GuiEvent<T extends GuiScreen> implements IEvent {
     protected final T gui;
@@ -36,8 +37,15 @@ public abstract class GuiEvent<T extends GuiScreen> implements IEvent {
     }
 
     public static class Draw<T extends GuiScreen> extends GuiEvent<T> {
-        public Draw(T gui) {
+        protected final TextRenderer textRenderer;
+
+        public Draw(T gui, TextRenderer textRenderer) {
             super(gui);
+            this.textRenderer = textRenderer;
+        }
+
+        public TextRenderer getTextRenderer() {
+            return textRenderer;
         }
 
         @Override

@@ -45,4 +45,8 @@ public class ModList {
     public Collection<IRegistrationConfig> getRegistrationConfigs() {
         return Collections.unmodifiableCollection(registrationConfigs);
     }
+
+    public int size() {
+        return mods.size();
+    }
 }
