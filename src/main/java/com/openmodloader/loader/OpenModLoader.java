@@ -1,7 +1,7 @@
 package com.openmodloader.loader;
 
 import com.github.zafarkhaja.semver.Version;
-import com.openmodloader.api.IOmlContext;
+import com.openmodloader.api.IGameContext;
 import com.openmodloader.api.mod.config.IRegistrationConfig;
 import com.openmodloader.core.event.EventDispatcher;
 import net.minecraft.registry.IdRegistry;
@@ -15,7 +15,7 @@ public final class OpenModLoader {
     private static Logger LOGGER = LogManager.getFormatterLogger(OpenModLoader.class);
 
     private static OpenModLoader instance;
-    private static IOmlContext context;
+    private static IGameContext context;
 
     private final ModList modList;
     private final EventDispatcher eventDispatcher;
@@ -25,7 +25,7 @@ public final class OpenModLoader {
         this.eventDispatcher = modList.buildEventDispatcher();
     }
 
-    public static void offerContext(IOmlContext context) {
+    public static void offerContext(IGameContext context) {
         if (OpenModLoader.context != null) {
             throw new IllegalStateException("OmlContext has already been initialized");
         }
@@ -46,7 +46,7 @@ public final class OpenModLoader {
         return instance;
     }
 
-    public static IOmlContext getContext() {
+    public static IGameContext getContext() {
         return context;
     }
 

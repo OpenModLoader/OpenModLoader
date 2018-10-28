@@ -1,6 +1,6 @@
 package com.openmodloader.loader;
 
-import com.openmodloader.api.IOmlContext;
+import com.openmodloader.api.IGameContext;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.Mod;
 import com.openmodloader.api.mod.ModMetadata;
@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class OmlBootstrap {
-    private static final Logger LOGGER = LogManager.getLogger(OmlBootstrap.class);
+public final class LoaderBootstrap {
+    private static final Logger LOGGER = LogManager.getLogger(LoaderBootstrap.class);
 
     private final File gameDir;
     private final File configDir;
@@ -25,7 +25,7 @@ public final class OmlBootstrap {
 
     private final List<IModReporter> modReporters = new ArrayList<>();
 
-    public OmlBootstrap() {
+    public LoaderBootstrap() {
         addModReporter(new BuiltinModReporter());
         addModReporter(new DevModReporter());
 
@@ -49,7 +49,7 @@ public final class OmlBootstrap {
     }
 
     public OpenModLoader create() {
-        IOmlContext context = OpenModLoader.getContext();
+        IGameContext context = OpenModLoader.getContext();
         LOGGER.info("Bootstrapping OpenModLoader on " + context.getPhysicalSide());
 
         ModList modList = new ModList(collectMods());

@@ -6,7 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import javax.annotation.Nullable;
 import java.io.File;
 
-public interface IOmlContext {
+public interface IGameContext {
     File getRunDirectory();
 
     @Nullable

@@ -8,7 +8,7 @@ import com.openmodloader.core.event.GuiEvent;
 import net.minecraft.client.gui.menu.GuiMainMenu;
 import net.minecraft.client.render.text.TextRenderer;
 
-public class OmlBuiltinMod implements IModConfigurator {
+public class BuiltinMod implements IModConfigurator {
     @Override
     public void configure(IModConfig config) {
         config.addEventConfig(SimpleEventConfig.builder()

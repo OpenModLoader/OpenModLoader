@@ -1,6 +1,6 @@
 package com.openmodloader.loader.client;
 
-import com.openmodloader.api.IOmlContext;
+import com.openmodloader.api.IGameContext;
 import net.fabricmc.api.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.MinecraftServer;
@@ -8,7 +8,7 @@ import net.minecraft.server.MinecraftServer;
 import javax.annotation.Nullable;
 import java.io.File;
 
-public class ClientOmlContext implements IOmlContext {
+public class ClientGameContext implements IGameContext {
     @Override
     public File getRunDirectory() {
         return Minecraft.getInstance().runDirectory;

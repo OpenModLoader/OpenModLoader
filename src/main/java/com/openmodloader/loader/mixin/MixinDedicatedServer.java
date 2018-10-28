@@ -4,22 +4,20 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
-import com.openmodloader.loader.OmlBootstrap;
+import com.openmodloader.loader.LoaderBootstrap;
 import com.openmodloader.loader.OpenModLoader;
-import com.openmodloader.loader.server.ServerOmlContext;
+import com.openmodloader.loader.server.ServerGameContext;
 import me.modmuss50.fusion.api.Mixin;
 import me.modmuss50.fusion.api.Rewrite;
 import net.minecraft.command.CommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.UserCache;
-import net.minecraft.world.LightEngine;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(value = DedicatedServer.class)
 public abstract class MixinDedicatedServer extends MinecraftServer {
@@ -30,9 +28,9 @@ public abstract class MixinDedicatedServer extends MinecraftServer {
 
     @Rewrite(target = "setupServer()Z", behavior = Rewrite.Behavior.START)
     public void setupServer_() throws IOException {
-        OpenModLoader.offerContext(new ServerOmlContext(this));
+        OpenModLoader.offerContext(new ServerGameContext(this));
 
-        OmlBootstrap bootstrap = new OmlBootstrap();
+        LoaderBootstrap bootstrap = new LoaderBootstrap();
         OpenModLoader oml = bootstrap.create();
         oml.initialize();
     }
