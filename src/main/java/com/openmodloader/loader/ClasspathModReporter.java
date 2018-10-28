@@ -14,26 +14,34 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Enumeration;
 
-public class DevModReporter implements IModReporter {
-    private static final Logger LOGGER = LogManager.getLogger(DevModReporter.class);
+public class ClasspathModReporter implements IModReporter {
+    private static final Logger LOGGER = LogManager.getLogger(ClasspathModReporter.class);
     private static final JsonParser PARSER = new JsonParser();
 
     @Override
     public void apply(ModReportCollector collector) {
-        try (InputStream input = OpenModLoader.class.getResourceAsStream("/mods.json")) {
-            // TODO: A more generic system for parsing mods.json files
-            JsonArray modArray = PARSER.parse(new InputStreamReader(input)).getAsJsonArray();
-            for (JsonElement element : modArray) {
-                JsonObject modRoot = element.getAsJsonObject();
-                try {
-                    reportMod(collector, modRoot);
-                } catch (ReflectiveOperationException e) {
-                    LOGGER.error("Failed to report dev mod from {}", element, e);
+        try {
+            Enumeration<URL> resources = ClassLoader.getSystemResources("mods.json");
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                try (InputStream input = url.openStream()) {
+                    // TODO: A more generic system for parsing mods.json files
+                    JsonArray modArray = PARSER.parse(new InputStreamReader(input)).getAsJsonArray();
+                    for (JsonElement element : modArray) {
+                        JsonObject modRoot = element.getAsJsonObject();
+                        try {
+                            reportMod(collector, modRoot);
+                        } catch (ReflectiveOperationException e) {
+                            LOGGER.error("Failed to report dev mod from {}", element, e);
+                        }
+                    }
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Failed to report dev mods from mods.json", e);
+            LOGGER.error("Failed to retrieve mods.json files from classpath", e);
         }
     }
 

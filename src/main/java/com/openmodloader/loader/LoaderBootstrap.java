@@ -27,7 +27,7 @@ public final class LoaderBootstrap {
 
     public LoaderBootstrap() {
         addModReporter(new BuiltinModReporter());
-        addModReporter(new DevModReporter());
+        addModReporter(new ClasspathModReporter());
 
         gameDir = OpenModLoader.getContext().getRunDirectory();
         configDir = new File(gameDir, "config");
