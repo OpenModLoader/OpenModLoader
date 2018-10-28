@@ -27,6 +27,7 @@ public final class OmlBootstrap {
 
     public OmlBootstrap() {
         addModReporter(new BuiltinModReporter());
+        addModReporter(new DevModReporter());
 
         gameDir = OpenModLoader.getContext().getRunDirectory();
         configDir = new File(gameDir, "config");
@@ -56,17 +57,6 @@ public final class OmlBootstrap {
     }
 
     private Collection<Mod> collectMods() {
-        // TODO
-        /*ServiceLoader<IModConfigurator> modServiceLoader = ServiceLoader.load(IModConfigurator.class);
-
-        for (File file : FileUtils.listFiles(modsDir, new String[] { "jar" }, true)) {
-            ModClassLoader loader = new ModClassLoader(new URL[] { file.toURI().toURL() });
-            ServiceLoader<IModConfigurator> jarServiceLoader = ServiceLoader.load(IModConfigurator.class, loader);
-            jarServiceLoader.forEach(mod -> mods.add(new Mod(metadata, mod)));
-        }
-
-        modServiceLoader.forEach(mod -> mods.add(new Mod(metadata, mod)));*/
-
         ModReportCollector reportCollector = new ModReportCollector();
         for (IModReporter reporter : modReporters) {
             reporter.apply(reportCollector);

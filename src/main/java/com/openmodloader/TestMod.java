@@ -8,14 +8,19 @@ import com.openmodloader.api.mod.config.SimpleRegistrationConfig;
 import com.openmodloader.core.event.GuiEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class TestMod implements IModConfigurator {
+    private static final String ID = "test";
+
     @Override
     public void configure(IModConfig config) {
         config.addRegistrationConfig(SimpleRegistrationConfig.builder()
-                .withEntry(Registry.ITEMS, new Identifier("test", "foo"), identifier -> new Item(new Item.Builder()))
+                .withEntry(Registry.ITEMS, new Identifier(ID, "foo"), identifier -> new Item(new Item.Builder()
+                        .withItemGroup(ItemGroup.MISC)
+                ))
                 .build()
         );
 
