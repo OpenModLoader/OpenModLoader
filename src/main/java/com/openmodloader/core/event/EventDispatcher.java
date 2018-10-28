@@ -6,7 +6,7 @@ import com.openmodloader.api.event.IEvent;
 import com.openmodloader.api.event.IEventListener;
 import com.openmodloader.api.event.IEventTarget;
 
-import java.util.Collection;
+import java.util.stream.Stream;
 
 public class EventDispatcher {
     private final EventMap events;
@@ -18,14 +18,9 @@ public class EventDispatcher {
     @SuppressWarnings("unchecked")
     public <E extends IEvent> void dispatch(E event) {
         IEventTarget<E> target = (IEventTarget<E>) event.makeTarget();
-        Collection<IEventListener<E>> listeners = this.events.getListeners(target);
-        if (listeners.isEmpty()) {
-            return;
-        }
+        Stream<IEventListener<E>> listeners = this.events.getListeners(target);
 
         EventContext context = new EventContext();
-        for (IEventListener<E> listener : listeners) {
-            listener.handle(event, context);
-        }
+        listeners.forEach(listener -> listener.handle(event, context));
     }
 }
