@@ -28,7 +28,7 @@ public class Sided<T> {
     }
 
     private T compute() {
-        Side physicalSide = OpenModLoader.get().getContext().getPhysicalSide();
+        Side physicalSide = OpenModLoader.getContext().getPhysicalSide();
         NestedSupplier<T> supplier = physicalSide.isClient() ? this.physicalClient : this.physicalServer;
         if (supplier == null) {
             throw new IllegalStateException("Cannot compute sided value, supplier not present for side " + physicalSide);

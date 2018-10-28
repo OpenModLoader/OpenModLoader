@@ -1,4 +1,4 @@
-package com.openmodloader.loader;
+package com.openmodloader.api;
 
 import net.fabricmc.api.Side;
 import net.minecraft.server.MinecraftServer;
@@ -6,7 +6,7 @@ import net.minecraft.server.MinecraftServer;
 import javax.annotation.Nullable;
 import java.io.File;
 
-public interface OMLContext {
+public interface IOmlContext {
     File getRunDirectory();
 
     @Nullable

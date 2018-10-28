@@ -30,7 +30,7 @@ public class SidedModConfigurator implements IModConfigurator {
             this.common.get().configure(config);
         }
 
-        Side physicalSide = OpenModLoader.get().getContext().getPhysicalSide();
+        Side physicalSide = OpenModLoader.getContext().getPhysicalSide();
         if (this.physicalClient != null && physicalSide.isClient()) {
             this.physicalClient.get().configure(config);
         }

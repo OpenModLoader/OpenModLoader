@@ -1,16 +1,16 @@
 package com.openmodloader.loader.server;
 
-import com.openmodloader.loader.OMLContext;
+import com.openmodloader.api.IOmlContext;
 import net.fabricmc.api.Side;
 import net.minecraft.server.MinecraftServer;
 
 import javax.annotation.Nullable;
 import java.io.File;
 
-public class ServerOMLContext implements OMLContext {
+public class ServerOmlContext implements IOmlContext {
     private final MinecraftServer server;
 
-    public ServerOMLContext(MinecraftServer server) {
+    public ServerOmlContext(MinecraftServer server) {
         this.server = server;
     }
 

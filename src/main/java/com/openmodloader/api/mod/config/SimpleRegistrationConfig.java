@@ -5,7 +5,7 @@ import net.minecraft.registry.IdRegistry;
 import net.minecraft.util.Identifier;
 
 import java.util.Collection;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 public class SimpleRegistrationConfig implements IRegistrationConfig {
     private final ImmutableMultimap<IdRegistry<?>, RegistryEntrySupplier<?>> entries;
@@ -33,7 +33,7 @@ public class SimpleRegistrationConfig implements IRegistrationConfig {
         private Builder() {
         }
 
-        public <T> Builder withEntry(IdRegistry<T> registry, Identifier identifier, Supplier<T> supplier) {
+        public <T> Builder withEntry(IdRegistry<T> registry, Identifier identifier, Function<Identifier, T> supplier) {
             this.entries.put(registry, new RegistryEntrySupplier<>(identifier, supplier));
             return this;
         }
@@ -45,15 +45,15 @@ public class SimpleRegistrationConfig implements IRegistrationConfig {
 
     private static class RegistryEntrySupplier<T> {
         private final Identifier identifier;
-        private final Supplier<T> supplier;
+        private final Function<Identifier,T> supplier;
 
-        private RegistryEntrySupplier(Identifier identifier, Supplier<T> supplier) {
+        private RegistryEntrySupplier(Identifier identifier, Function<Identifier, T> supplier) {
             this.identifier = identifier;
             this.supplier = supplier;
         }
 
         private void registerTo(IdRegistry<T> registry) {
-            registry.register(this.identifier, this.supplier.get());
+            registry.register(this.identifier, this.supplier.apply(this.identifier));
         }
     }
 }

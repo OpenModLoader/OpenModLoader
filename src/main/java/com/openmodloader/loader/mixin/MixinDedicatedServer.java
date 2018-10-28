@@ -4,8 +4,9 @@ import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
+import com.openmodloader.loader.OmlBootstrap;
 import com.openmodloader.loader.OpenModLoader;
-import com.openmodloader.loader.server.ServerOMLContext;
+import com.openmodloader.loader.server.ServerOmlContext;
 import me.modmuss50.fusion.api.Mixin;
 import me.modmuss50.fusion.api.Rewrite;
 import net.minecraft.command.CommandManager;
@@ -25,11 +26,12 @@ public abstract class MixinDedicatedServer extends MinecraftServer {
         super(aFile1, aProxy2, aDataFixer3, aCommandManager4, aYggdrasilAuthenticationService5, aMinecraftSessionService6, aGameProfileRepository7, aUserCache8);
     }
 
-	@Rewrite(target = "setupServer()Z", behavior = Rewrite.Behavior.START)
-	public void setupServer_() throws IOException {
-        OpenModLoader oml = OpenModLoader.initialize(new ServerOMLContext(this));
-        oml.loadMods();
+    @Rewrite(target = "setupServer()Z", behavior = Rewrite.Behavior.START)
+    public void setupServer_() throws IOException {
+        OpenModLoader.offerContext(new ServerOmlContext(this));
+
+        OmlBootstrap bootstrap = new OmlBootstrap();
+        OpenModLoader oml = bootstrap.create();
+        oml.initialize();
     }
-
-
 }

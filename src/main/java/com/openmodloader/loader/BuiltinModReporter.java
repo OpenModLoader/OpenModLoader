@@ -31,7 +31,7 @@ public class BuiltinModReporter implements IModReporter {
                     .build()
             );
             config.addRegistrationConfig(SimpleRegistrationConfig.builder()
-                    .withEntry(Registry.ITEMS, new Identifier("openmodloader", "test"), () -> new Item(new Item.Builder()))
+                    .withEntry(Registry.ITEMS, new Identifier("openmodloader", "test"), identifier -> new Item(new Item.Builder()))
                     .build()
             );
         });
