@@ -7,7 +7,9 @@ import com.openmodloader.api.mod.ModMetadata;
 import com.openmodloader.api.mod.config.IEventConfig;
 import com.openmodloader.api.mod.config.IModConfig;
 import com.openmodloader.api.mod.config.IModConfigurator;
+import com.openmodloader.api.mod.config.IRegistrationConfig;
 import com.openmodloader.core.event.EventDispatcher;
+import net.minecraft.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -98,6 +100,14 @@ public final class OpenModLoader {
         }
 
         eventDispatcher = new EventDispatcher(eventBuilder.build());
+
+        Collection<IRegistrationConfig> registrationConfigs = mods.stream()
+                .map(Mod::getConfig)
+                .flatMap(c -> c.getRegistrationConfigs().stream())
+                .collect(Collectors.toList());
+
+        // TODO: Test code
+        registrationConfigs.forEach(c -> c.registerEntries(Registry.ITEMS));
 
         /*ServiceLoader<IModConfigurator> modServiceLoader = ServiceLoader.load(IModConfigurator.class);
 

@@ -4,10 +4,14 @@ import com.github.zafarkhaja.semver.Version;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.ModMetadata;
 import com.openmodloader.api.mod.config.SimpleEventConfig;
+import com.openmodloader.api.mod.config.SimpleRegistrationConfig;
 import com.openmodloader.api.mod.config.VoidModConfigurator;
 import com.openmodloader.core.event.GuiEvent;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.menu.GuiMainMenu;
+import net.minecraft.item.Item;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
 
 public class BuiltinModReporter implements IModReporter {
     @Override
@@ -24,6 +28,10 @@ public class BuiltinModReporter implements IModReporter {
                         GuiMainMenu gui = event.getGui();
                         System.out.println("draw screen " + gui);
                     })
+                    .build()
+            );
+            config.addRegistrationConfig(SimpleRegistrationConfig.builder()
+                    .withEntry(Registry.ITEMS, new Identifier("openmodloader", "test"), () -> new Item(new Item.Builder()))
                     .build()
             );
         });
