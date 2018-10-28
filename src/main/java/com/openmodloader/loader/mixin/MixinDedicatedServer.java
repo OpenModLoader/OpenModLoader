@@ -13,11 +13,13 @@ import net.minecraft.command.CommandManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.util.UserCache;
+import net.minecraft.world.LightEngine;
 
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Mixin(value = DedicatedServer.class)
 public abstract class MixinDedicatedServer extends MinecraftServer {

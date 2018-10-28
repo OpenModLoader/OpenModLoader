@@ -1,4 +1,4 @@
-http://maven.modmuss50.me/me/modmuss50/Fusion/0.0.1.10/Fusion-0.0.1.10.jar
+http://maven.modmuss50.me/me/modmuss50/Fusion/0.0.1.12/Fusion-0.0.1.12.jar
 http://central.maven.org/maven2/org/ow2/asm/asm/6.2.1/asm-6.2.1.jar
 http://central.maven.org/maven2/org/ow2/asm/asm-tree/6.2.1/asm-tree-6.2.1.jar
 http://central.maven.org/maven2/org/ow2/asm/asm-commons/6.2.1/asm-commons-6.2.1.jar

@@ -27,7 +27,7 @@ public class OMLServiceProvider implements ITransformationService {
 	public void initialize(IEnvironment environment) {
 		LOGGER.info("Hello Mod Launcher!");
 		Map<String, String> data = new HashMap<>();
-		data.put("side", Side.UNIVERSAL.name()); //TODO find a good way to get the side
+		data.put("side", (System.getProperty("omlServer", "false").equals("true") ? Side.SERVER : Side.CLIENT).name()); //TODO find a good way to get the side
 		MixinManager.findMixins(data);
 	}
 
