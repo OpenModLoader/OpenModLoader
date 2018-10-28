@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version;
 import com.openmodloader.api.IOmlContext;
 import com.openmodloader.api.mod.config.IRegistrationConfig;
 import com.openmodloader.core.event.EventDispatcher;
+import net.minecraft.registry.IdRegistry;
 import net.minecraft.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 public final class OpenModLoader {
     public static final Version VERSION = Version.valueOf("1.0.0");
 
-    protected static Logger LOGGER = LogManager.getFormatterLogger("OpenModLoader");
+    private static Logger LOGGER = LogManager.getFormatterLogger(OpenModLoader.class);
 
     private static OpenModLoader instance;
     private static IOmlContext context;
@@ -60,9 +61,16 @@ public final class OpenModLoader {
     public void initialize() {
         offerInstance(this);
 
-        // TODO: Test code
+        for (Registry<?> registry : Registry.REGISTRIES) {
+            if (registry instanceof IdRegistry) {
+                initializeRegistry((IdRegistry<?>) registry);
+            }
+        }
+    }
+
+    private <T> void initializeRegistry(IdRegistry<T> registry) {
         for (IRegistrationConfig config : modList.getRegistrationConfigs()) {
-            config.registerEntries(Registry.ITEMS);
+            config.registerEntries(registry);
         }
     }
 }
