@@ -5,10 +5,12 @@ import com.openmodloader.api.mod.config.IModConfig;
 public class Mod {
     private final ModMetadata metadata;
     private final IModConfig config;
+    private final boolean global;
 
-    public Mod(ModMetadata metadata, IModConfig config) {
+    public Mod(ModMetadata metadata, IModConfig config, boolean global) {
         this.metadata = metadata;
         this.config = config;
+        this.global = global;
     }
 
     public ModMetadata getMetadata() {
@@ -17,6 +19,10 @@ public class Mod {
 
     public IModConfig getConfig() {
         return config;
+    }
+
+    public boolean isGlobal() {
+        return global;
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.openmodloader.core.event.GuiEvent;
 import net.minecraft.client.gui.menu.GuiMainMenu;
 import net.minecraft.client.render.text.TextRenderer;
 
-public class BuiltinMod implements IModConfigurator {
+public class BuiltinModConfigurator implements IModConfigurator {
     @Override
     public void configure(IModConfig config) {
         config.addEventConfig(SimpleEventConfig.builder()
@@ -21,10 +21,15 @@ public class BuiltinMod implements IModConfigurator {
         GuiMainMenu gui = event.getGui();
         TextRenderer textRenderer = event.getTextRenderer();
 
-        int mods = OpenModLoader.get().getModList().size();
+        ModContext modContext = OpenModLoader.get().getInstalledModContext();
+        if (modContext == null) {
+            return;
+        }
+
+        int mods = modContext.size();
         String version = OpenModLoader.VERSION.toString();
 
         textRenderer.renderText(String.format("OML Version %s", version), 2, gui.height - 30, -1);
-        textRenderer.renderText(String.format("%d %s Loaded", mods, mods == 1 ? "Mod" : "Mods"), 2, gui.height - 20, -1);
+        textRenderer.renderText(String.format("%d %s Installed", mods, mods == 1 ? "Mod" : "Mods"), 2, gui.height - 20, -1);
     }
 }

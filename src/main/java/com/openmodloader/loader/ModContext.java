@@ -1,23 +1,25 @@
 package com.openmodloader.loader;
 
 import com.openmodloader.api.event.EventMap;
+import com.openmodloader.api.event.IEventDispatcher;
 import com.openmodloader.api.mod.Mod;
 import com.openmodloader.api.mod.config.IEventConfig;
 import com.openmodloader.api.mod.config.IModConfig;
 import com.openmodloader.api.mod.config.IRegistrationConfig;
-import com.openmodloader.core.event.EventDispatcher;
+import com.openmodloader.core.event.ImmutableEventDispatcher;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
-public class ModList {
+public class ModContext implements Iterable<Mod> {
     private final Collection<Mod> mods;
 
     private final Collection<IEventConfig> eventConfigs = new ArrayList<>();
     private final Collection<IRegistrationConfig> registrationConfigs = new ArrayList<>();
 
-    public ModList(Collection<Mod> mods) {
+    public ModContext(Collection<Mod> mods) {
         this.mods = mods;
         for (Mod mod : mods) {
             IModConfig config = mod.getConfig();
@@ -26,16 +28,12 @@ public class ModList {
         }
     }
 
-    public EventDispatcher buildEventDispatcher() {
+    public IEventDispatcher buildEventDispatcher() {
         EventMap.Builder eventBuilder = EventMap.builder();
         for (IEventConfig config : eventConfigs) {
             config.applyTo(eventBuilder);
         }
-        return new EventDispatcher(eventBuilder.build());
-    }
-
-    public Collection<Mod> getMods() {
-        return Collections.unmodifiableCollection(mods);
+        return new ImmutableEventDispatcher(eventBuilder.build());
     }
 
     public Collection<IEventConfig> getEventConfigs() {
@@ -48,5 +46,10 @@ public class ModList {
 
     public int size() {
         return mods.size();
+    }
+
+    @Override
+    public Iterator<Mod> iterator() {
+        return this.mods.iterator();
     }
 }

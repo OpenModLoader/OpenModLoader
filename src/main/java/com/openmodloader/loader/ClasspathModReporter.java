@@ -1,6 +1,7 @@
 package com.openmodloader.loader;
 
 import com.openmodloader.api.loader.IModReporter;
+import com.openmodloader.api.mod.ModCandidate;
 import com.openmodloader.api.mod.ModMetadata;
 import com.openmodloader.api.mod.config.IModConfigurator;
 import com.openmodloader.loader.parse.ModDeclaration;
@@ -36,9 +37,14 @@ public class ClasspathModReporter implements IModReporter {
     private void reportMod(ModReportCollector collector, ModConstructor constructor, ModDeclaration declaration) {
         try {
             ModMetadata metadata = declaration.buildMetadata();
-
             IModConfigurator configurator = declaration.constructConfigurator(constructor);
-            collector.report(metadata, configurator);
+
+            ModCandidate candidate = new ModCandidate(metadata, configurator);
+            if (declaration.isGlobal()) {
+                candidate = candidate.global();
+            }
+
+            collector.report(candidate);
 
             for (ModDeclaration child : declaration.getChildren()) {
                 reportMod(collector, constructor, child);

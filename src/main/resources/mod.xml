@@ -1,3 +1,3 @@
-<mod id="test" name="Test" version="1.0.0">
+<mod id="test" name="Test" version="1.0.0" global="true">
     <configurator class="com.openmodloader.TestMod"/>
 </mod>

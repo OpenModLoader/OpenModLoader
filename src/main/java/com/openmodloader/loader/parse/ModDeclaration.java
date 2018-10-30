@@ -28,6 +28,9 @@ public class ModDeclaration {
     @XmlAttribute
     private String version = "1.0.0";
 
+    @XmlAttribute
+    private boolean global;
+
     @XmlElement
     private Configurator configurator;
 
@@ -100,6 +103,10 @@ public class ModDeclaration {
         } catch (ClassNotFoundException e) {
             throw new ModConstructionException(e);
         }
+    }
+
+    public boolean isGlobal() {
+        return global;
     }
 
     private static class Configurator {

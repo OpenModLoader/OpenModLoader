@@ -1,22 +1,16 @@
 package com.openmodloader.loader;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.openmodloader.api.IGameContext;
 import com.openmodloader.api.loader.ILanguageAdapter;
 import com.openmodloader.api.loader.IModReporter;
-import com.openmodloader.api.mod.Mod;
-import com.openmodloader.api.mod.ModMetadata;
-import com.openmodloader.api.mod.config.IModConfig;
-import com.openmodloader.api.mod.config.IModConfigurator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public final class LoaderBootstrap {
     private static final Logger LOGGER = LogManager.getLogger(LoaderBootstrap.class);
@@ -27,7 +21,7 @@ public final class LoaderBootstrap {
     private final File librariesDir;
 
     private final Map<String, ILanguageAdapter> languageAdapters = new HashMap<>();
-    private final List<IModReporter> modReporters = new ArrayList<>();
+    private final ImmutableList.Builder<IModReporter> modReporters = ImmutableList.builder();
 
     public LoaderBootstrap() {
         addModReporter(new BuiltinModReporter());
@@ -50,7 +44,7 @@ public final class LoaderBootstrap {
     }
 
     public void addModReporter(IModReporter reporter) {
-        this.modReporters.add(reporter);
+        modReporters.add(reporter);
     }
 
     public void addLanguageAdapter(String key, ILanguageAdapter adapter) {
@@ -64,33 +58,6 @@ public final class LoaderBootstrap {
         IGameContext context = OpenModLoader.getContext();
         LOGGER.info("Bootstrapping OpenModLoader on " + context.getPhysicalSide());
 
-        ModList modList = new ModList(collectMods());
-        return new OpenModLoader(modList);
-    }
-
-    private Collection<Mod> collectMods() {
-        ModReportCollector reportCollector = new ModReportCollector();
-        ModConstructor constructor = new ModConstructor(this.languageAdapters);
-
-        for (IModReporter reporter : modReporters) {
-            reporter.apply(reportCollector, constructor);
-        }
-
-        Collection<ModReportCollector.Report> reports = reportCollector.getReports();
-        LOGGER.info("Collected {} reported mods", reports.size());
-
-        return reports.stream()
-                .map(this::constructMod)
-                .collect(Collectors.toList());
-    }
-
-    private Mod constructMod(ModReportCollector.Report report) {
-        ModMetadata metadata = report.getMetadata();
-        IModConfigurator configurator = report.getConfigurator();
-
-        IModConfig config = configurator.initConfig();
-        configurator.configure(config);
-
-        return new Mod(metadata, config);
+        return new OpenModLoader(modReporters.build(), ImmutableMap.copyOf(languageAdapters));
     }
 }
