@@ -1,6 +1,7 @@
 package com.openmodloader.loader;
 
 import com.openmodloader.api.IGameContext;
+import com.openmodloader.api.loader.ILanguageAdapter;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.Mod;
 import com.openmodloader.api.mod.ModMetadata;
@@ -12,7 +13,9 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public final class LoaderBootstrap {
@@ -23,11 +26,13 @@ public final class LoaderBootstrap {
     private final File modsDir;
     private final File librariesDir;
 
+    private final Map<String, ILanguageAdapter> languageAdapters = new HashMap<>();
     private final List<IModReporter> modReporters = new ArrayList<>();
 
     public LoaderBootstrap() {
         addModReporter(new BuiltinModReporter());
         addModReporter(new ClasspathModReporter());
+        addLanguageAdapter("java", JavaLanguageAdapter.INSTANCE);
 
         gameDir = OpenModLoader.getContext().getRunDirectory();
         configDir = new File(gameDir, "config");
@@ -48,6 +53,13 @@ public final class LoaderBootstrap {
         this.modReporters.add(reporter);
     }
 
+    public void addLanguageAdapter(String key, ILanguageAdapter adapter) {
+        if (languageAdapters.containsKey(key)) {
+            throw new IllegalArgumentException("Language adapter '" + key + "' is already registered");
+        }
+        languageAdapters.put(key, adapter);
+    }
+
     public OpenModLoader create() {
         IGameContext context = OpenModLoader.getContext();
         LOGGER.info("Bootstrapping OpenModLoader on " + context.getPhysicalSide());
@@ -58,8 +70,10 @@ public final class LoaderBootstrap {
 
     private Collection<Mod> collectMods() {
         ModReportCollector reportCollector = new ModReportCollector();
+        ModConstructor constructor = new ModConstructor(this.languageAdapters);
+
         for (IModReporter reporter : modReporters) {
-            reporter.apply(reportCollector);
+            reporter.apply(reportCollector, constructor);
         }
 
         Collection<ModReportCollector.Report> reports = reportCollector.getReports();

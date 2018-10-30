@@ -1,8 +1,0 @@
-[
-  {
-    "id": "test",
-    "name": "Test",
-    "version": "1.0.0",
-    "configurator": "com.openmodloader.TestMod"
-  }
-]

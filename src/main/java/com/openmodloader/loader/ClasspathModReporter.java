@@ -1,67 +1,50 @@
 package com.openmodloader.loader;
 
-import com.github.zafarkhaja.semver.Version;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.openmodloader.api.loader.IModReporter;
 import com.openmodloader.api.mod.ModMetadata;
 import com.openmodloader.api.mod.config.IModConfigurator;
+import com.openmodloader.loader.parse.ModDeclaration;
+import com.openmodloader.loader.parse.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Enumeration;
 
 public class ClasspathModReporter implements IModReporter {
     private static final Logger LOGGER = LogManager.getLogger(ClasspathModReporter.class);
-    private static final JsonParser PARSER = new JsonParser();
 
     @Override
-    public void apply(ModReportCollector collector) {
+    public void apply(ModReportCollector collector, ModConstructor constructor) {
         try {
-            Enumeration<URL> resources = ClassLoader.getSystemResources("mods.json");
+            Enumeration<URL> resources = ClassLoader.getSystemResources("mod.xml");
             while (resources.hasMoreElements()) {
                 URL url = resources.nextElement();
                 try (InputStream input = url.openStream()) {
-                    // TODO: A more generic system for parsing mods.json files
-                    JsonArray modArray = PARSER.parse(new InputStreamReader(input)).getAsJsonArray();
-                    for (JsonElement element : modArray) {
-                        JsonObject modRoot = element.getAsJsonObject();
-                        try {
-                            reportMod(collector, modRoot);
-                        } catch (ReflectiveOperationException e) {
-                            LOGGER.error("Failed to report dev mod from {}", element, e);
-                        }
-                    }
+                    reportMod(collector, constructor, ModDeclaration.parse(input));
+                } catch (ParseException e) {
+                    LOGGER.error("Failed to parse mod.xml file", e);
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("Failed to retrieve mods.json files from classpath", e);
+            LOGGER.error("Failed to retrieve mod.xml files from classpath", e);
         }
     }
 
-    private void reportMod(ModReportCollector collector, JsonObject modRoot) throws ReflectiveOperationException {
-        ModMetadata metadata = parseMetadata(modRoot);
+    private void reportMod(ModReportCollector collector, ModConstructor constructor, ModDeclaration declaration) {
+        try {
+            ModMetadata metadata = declaration.buildMetadata();
 
-        String configurator = modRoot.get("configurator").getAsString();
-        Class<?> configuratorClass = Class.forName(configurator);
+            IModConfigurator configurator = declaration.constructConfigurator(constructor);
+            collector.report(metadata, configurator);
 
-        if (!IModConfigurator.class.isAssignableFrom(configuratorClass)) {
-            LOGGER.error("'{}' defined for mod '{}' was not of type IModConfigurator", configurator, metadata.getId());
-            return;
+            for (ModDeclaration child : declaration.getChildren()) {
+                reportMod(collector, constructor, child);
+            }
+        } catch (ModConstructionException e) {
+            LOGGER.error("Failed to construct classpath mod '{}'", declaration.getId(), e);
         }
-
-        collector.report(metadata, (IModConfigurator) configuratorClass.newInstance());
-    }
-
-    private ModMetadata parseMetadata(JsonObject modRoot) {
-        String id = modRoot.get("id").getAsString();
-        Version version = Version.valueOf(modRoot.get("version").getAsString());
-        return new ModMetadata(id, version);
     }
 }

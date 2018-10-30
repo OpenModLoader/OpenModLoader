@@ -22,35 +22,32 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nonnull;
+import java.lang.reflect.Modifier;
 
 public class AccessTransformer {
 
-	@Nonnull
-	public ClassNode transform(ClassNode classNode) {
-		boolean isClassPublic = (classNode.access & Opcodes.ACC_PUBLIC) != 0;
-		if (!isClassPublic) {
-			classNode.access &= ~Opcodes.ACC_PRIVATE;
-			classNode.access &= ~Opcodes.ACC_PROTECTED;
-			classNode.access |= Opcodes.ACC_PUBLIC;
-		}
+    @Nonnull
+    public ClassNode transform(ClassNode classNode) {
+        if (!Modifier.isPublic(classNode.access)) {
+            classNode.access = publify(classNode.access);
+        }
 
-		for (MethodNode method : classNode.methods) {
-			boolean isPublic = (method.access & Opcodes.ACC_PUBLIC) != 0;
-			if (!isPublic) {
-				method.access &= ~Opcodes.ACC_PRIVATE;
-				method.access &= ~Opcodes.ACC_PROTECTED;
-				method.access |= Opcodes.ACC_PUBLIC;
-			}
-		}
-		for (FieldNode field : classNode.fields) {
-			boolean isPublic = (field.access & Opcodes.ACC_PUBLIC) != 0;
-			if (!isPublic) {
-				field.access &= ~Opcodes.ACC_PRIVATE;
-				field.access &= ~Opcodes.ACC_PROTECTED;
-				field.access |= Opcodes.ACC_PUBLIC;
-			}
-		}
-		return classNode;
-	}
+        for (MethodNode method : classNode.methods) {
+            if (!Modifier.isPublic(method.access)) {
+                method.access = publify(method.access);
+            }
+        }
 
+        for (FieldNode field : classNode.fields) {
+            if (!Modifier.isPublic(field.access)) {
+                field.access = publify(field.access);
+            }
+        }
+
+        return classNode;
+    }
+
+    private static int publify(int access) {
+        return access & ~Opcodes.ACC_PRIVATE & ~Opcodes.ACC_PROTECTED | Opcodes.ACC_PUBLIC;
+    }
 }
