@@ -1,22 +1,22 @@
 package com.openmodloader.loader.launch;
 
+import com.google.common.collect.Lists;
+
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class OMLDevClientLaunchHandler extends OMLClientLaunchHandler {
 
-	@Override
-	public Path[] identifyTransformationTargets() {
-		Path[] basePaths = super.identifyTransformationTargets();
-		List<Path> paths = new ArrayList<>(Arrays.asList(basePaths));
-		addDirectoriesFromClasspath(paths);
-		return paths.toArray(new Path[0]);
-	}
+    @Override
+    public Path[] identifyTransformationTargets() {
+        Path[] basePaths = super.identifyTransformationTargets();
+        List<Path> paths = Lists.newArrayList(basePaths);
+        addDirectoriesFromClasspath(paths);
+        return paths.toArray(new Path[0]);
+    }
 
-	@Override
-	public String name() {
-		return "omldevclient";
-	}
+    @Override
+    public String name() {
+        return "omldevclient";
+    }
 }
