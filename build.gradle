@@ -44,10 +44,6 @@ repositories {
         url = 'https://libraries.minecraft.net/'
     }
     maven {
-        name = 'Fabric'
-        url = 'http://maven.fabricmc.net/'
-    }
-    maven {
         name = 'Modmuss'
         url = 'http://maven.modmuss50.me/'
     }

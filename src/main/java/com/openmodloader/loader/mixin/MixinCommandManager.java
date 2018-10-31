@@ -1,8 +1,6 @@
 package com.openmodloader.loader.mixin;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.openmodloader.core.registry.RegisterCommandsEvent;
-import com.openmodloader.loader.OpenModLoader;
 import me.modmuss50.fusion.api.Mixin;
 import me.modmuss50.fusion.api.Rewrite;
 import net.minecraft.command.CommandManager;
@@ -16,7 +14,8 @@ public abstract class MixinCommandManager {
 
 	@Rewrite(target = "<init>", behavior = Rewrite.Behavior.END)
 	public void constructor(boolean dediServer) {
-        OpenModLoader.LOAD_BUS.post(new RegisterCommandsEvent(commandDispatcher));
+		// TODO
+//        OpenModLoader.LOAD_BUS.post(new RegisterCommandsEvent(commandDispatcher));
     }
 
 }
