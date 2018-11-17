@@ -16,9 +16,9 @@ buildscript{
 apply plugin: OpenGradlePlugin
 group 'com.openmodloader'
 
-def minecraft_version = "18w43b"
-def pomf_version = "13"
-version minecraft_version + '-1.0.8'
+def minecraft_version = "18w46a"
+def pomf_version = "1"
+version minecraft_version + '-1.0.9'
 
 def ENV = System.getenv()
 if (ENV.BUILD_NUMBER) {
@@ -72,12 +72,12 @@ jar {
                 'OMLVersion': project.version,
                 'PomfVersion': pomf_version,
                 'Main-Class': 'com.openmodloader.loader.launch.ServerLauncher',
-                'Class-Path': 'minecraft_server.' + minecraft_version + '.jar' + getClasspathEntrys()
+                'Class-Path': 'minecraft_server.' + minecraft_version + '.jar' + getClasspathEntries()
         )
     }
 }
 
-String getClasspathEntrys(){
+String getClasspathEntries(){
 	String classPath = ""
 	File serverDeps = file("src/main/resources/dependencies_server.txt")
 	serverDeps.eachLine{ String dep ->
@@ -102,7 +102,7 @@ publishing {
 			version project.version
 
 			from components.java
-            artifact deobfJar
+      artifact deobfJar
 		}
 	}
 	repositories {
